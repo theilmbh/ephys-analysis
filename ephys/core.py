@@ -225,7 +225,6 @@ def get_spikes(block_path,channel_group=0,clustering='main',noise=False):
         time_samples : time stamp (samples) of the spike
 
     ''' 
-
     with h5.File(get_kwik(block_path),'r') as kf:
         spikes = pd.DataFrame(
             dict(cluster=kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:],
@@ -233,7 +232,7 @@ def get_spikes(block_path,channel_group=0,clustering='main',noise=False):
                 time_samples=kf['/channel_groups/{}/spikes/time_samples'.format(channel_group)][:],
                 )
             )
-        
+
         if noise:
             return spikes
         else:
