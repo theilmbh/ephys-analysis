@@ -86,3 +86,8 @@ If you have code written already that works toward these ends, do the following.
   2. CLICK on the "Pull Requests" tab
   3. CLICK "New Pull Request"
   4. CHOOSE "base: master" and "compare: [whatever you named your branch in step#2]"
+
+
+  ## Contribution guidelines
+
+  1. If you add a function, you MUST include an example in an ipython notebook in this repository!
