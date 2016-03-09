@@ -76,6 +76,11 @@ def make_cell_groups(spikes, segment, subwin_len, threshold=6., n_subwin=5):
 	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'], spikes),axis=1)
 	clusters['fr_stddev'] = clusters.apply(lambda row: get_stddev_fr(row['cluster'], spikes, subwindows),axis=1)
 
+	# Get cells in window
+
+	# Get Firing Rate of Cells in Window
+
+	# Threshold firing rates
 
 
 
