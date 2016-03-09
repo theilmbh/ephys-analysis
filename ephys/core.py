@@ -201,7 +201,7 @@ def get_clusters(block_path,channel_group=0,clustering='main'):
         clusters['quality'] = clusters['cluster'].map(lambda clu: get_qual(block_path,clu))
     return clusters
 
-def get_spikes(block_path,channel_group=0,clustering='main'):
+def get_spikes(block_path,channel_group=0,clustering='main',noise=False):
     '''
     Returns a pandas dataframe of spikes observed in kwik file
     
@@ -213,6 +213,8 @@ def get_spikes(block_path,channel_group=0,clustering='main'):
         shank ID
     clustering : int, optional
         ID of clustering
+    noise : bool, optional
+        Flag for returning noise spikes or not
         
     Returns
     ------
@@ -222,12 +224,41 @@ def get_spikes(block_path,channel_group=0,clustering='main'):
         recording : recording ID of the spike
         time_samples : time stamp (samples) of the spike
 
-    '''    
+    ''' 
+
     with h5.File(get_kwik(block_path),'r') as kf:
         spikes = pd.DataFrame(
             dict(cluster=kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:],
-                 recording=kf['/channel_groups/{}/spikes/recording'.format(channel_group)][:],
-                 time_samples=kf['/channel_groups/{}/spikes/time_samples'.format(channel_group)][:],
-                 )
+                recording=kf['/channel_groups/{}/spikes/recording'.format(channel_group)][:],
+                time_samples=kf['/channel_groups/{}/spikes/time_samples'.format(channel_group)][:],
+                )
             )
-    return spikes
+        
+        if noise:
+            return spikes
+        else:
+            clusters = get_clusters(block_bath)
+            nonnoise_clusters = clusters['quality']~='Noise'
+            nonnoise_spikes = spikes[spikes['cluster'].isin(nonnoise_clusters)]
+            return spikes
+
+
+def merge_spike_qual(spikes, clusters):
+    '''
+    Merges quality information into the spike DataFrame
+
+    Parameters
+    ------
+    spikes : pandas DataFrame
+        DataFrame of spikes
+    clusters : pandas DataFrame 
+        DataFrame of clusters
+
+    Returns
+    ------
+    merged : pandas DataFrame
+        Spike dataframe along with quality information for each spike 
+    '''
+    merged = spikes.join(clusters, on='cluster')
+    return merged
+
