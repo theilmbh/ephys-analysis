@@ -5,6 +5,26 @@ import events
 import core
 import spiketrains as spt
 
+def get_spikes_in_window(spikes, window):
+	'''
+	Returns a spike DataFrame containing all spikes within a given window
+
+	Parameters
+	------
+	spikes : pandas DataFrame
+		Contains the spike data (see core)
+	window : tuple
+		The lower and upper bounds of the time window for extracting spikes 
+
+	Returns
+	------
+	spikes_in_window : pandas DataFrame
+		DataFrame with same layout as input spikes but containing only spikes within window 
+	'''
+
+	mask = (spikes['time_samples'] <= window[1]) & (spikes['time_samples']>=window[0])
+	return spikes[mask]
+
 #todo: decorate
 def get_mean_fr(cluster, spikes, window):
 	'''
@@ -28,6 +48,9 @@ def get_mean_fr(cluster, spikes, window):
 	# Get all spikes from the cluster
 	spikes = spikes[spikes['cluster']==cluster]
 
+	# Get all of the spikes within the time window
+	spikes = get_spikes_in_window(spikes, window)
+
 	# Compute number of spikes
 	nspikes = len(spikes.index)
 
@@ -39,9 +62,36 @@ def get_mean_fr(cluster, spikes, window):
 
 	return mean_fr
 
-def get_stddev_fr
+def build_population_vectors(spikes, clusters, windows):
+	'''
+	Builds population vectors according to Curto and Itskov 2008
 
-def make_cell_groups(spikes, segment, subwin_len, threshold=6., n_subwin=5):
+	Parameters
+	------
+	spikes : pandas DataFrame
+		DataFrame containing spike data. Must have 'fr_mean' column containing mean firing rate
+	clusters : pandas DataFrame
+		Dataframe containing cluster information
+	windows : tuple
+		The set of windows to compute population vectors for 
+
+	Returns 
+	------
+	popvec_list : list
+		population vector list.  Each element is a list containing the window and the population vector.
+		The population vector is an array containing cluster ID and firing rate. 
+	'''
+
+	popvec_list = []
+	for win in windows:
+		popvec = np.zeros([len(clusters.index), 2])
+		for ind, cluster in enumerate(clusters['cluster'].values):
+			popvec[ind, 1] = get_mean_fr(cluster, spikes, win)
+			popvec[ind, 0] = cluster
+		popvec_list.append([win, popvec])
+	return popvec_list
+
+def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, threshold=6., n_subwin=5):
 	'''
 	Creates cell group dataframe according to Curto and Itskov 2008
 
@@ -51,6 +101,10 @@ def make_cell_groups(spikes, segment, subwin_len, threshold=6., n_subwin=5):
 		Dataframe containing the spikes to analyze
 	segment : tuple or list of floats
 		time window for which to create cell groups 
+	clusters : pandas DataFrame
+		dataframe containing cluster information
+	cluster_group : str, optional
+		Quality of the clusters to include in the analysis (Good, MUA, etc)
 	subwin_len : int 
 		length (samples) for each subwin
 	threshold : float, optional 
@@ -67,20 +121,27 @@ def make_cell_groups(spikes, segment, subwin_len, threshold=6., n_subwin=5):
 	# Extract spikes within window
 	spikes = spikes[np.logical_and(spikes['time_samples'] >= segment[0], spikes['time_samples'] <= segment[1])]
 
-	# Get cluster IDs of spikes within window
-	clusters = pd.DataFrame(dict(cluster=np.unique(spikes['cluster'].values)))
+	if cluster_group ~= None:
+		mask = np.ones(len(spikes.index)) < 0
+		for grp in cluster_group:
+			mask = np.logical_or(mask, clusters['quality'] == grp)
+		clusters = clusters[mask]
+		spikes = spikes[spikes['cluster'].isin(clusters['cluster'].values)]
 
 	# Create subwindows
+	topology_subwindows = create_subwindows()
 
 	# Get mean and standard deviation of firing rate for each cluster
-	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'], spikes),axis=1)
-	clusters['fr_stddev'] = clusters.apply(lambda row: get_stddev_fr(row['cluster'], spikes, subwindows),axis=1)
+	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],spikes),axis=1)
 
-	# Get cells in window
-
-	# Get Firing Rate of Cells in Window
+	# Build population vectors
+	population_vector_list = build_population_vectors(spikes, clusters, topology_subwindows)
 
 	# Threshold firing rates
+	for population_vector_win in population_vector_list:
+		win = population_vector_win[0]
+		popvec = population_vector_win[1]
+		
 
 
 
