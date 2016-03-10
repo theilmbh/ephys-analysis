@@ -1,6 +1,46 @@
 # ephys-analysis
 scripts and utilities for processing electrophysiology data
 
+## analysis architercture
+
+what we need to be able to do
+- get spikes from a given trial
+- get spikes from a given stimulus or event
+- get spikes from a given neuron
+- get spikes from a population of neurons
+- make rasters
+- make PSTH
+- plot spike shapes
+- get spike widths
+- identify neuron location
+- cluster quality metrics
+- plot distribution of spike widths in a population
+
+what Zeke also wants
+- save needed metadata into one of the HDF5 files (params.prm, indx_port_site.txt, probe file, _info.json, other)
+
+1. Core
+  - load spikes
+  - load clusters
+  - load events
+  - load spike shapes
+  - load LFP
+  - load metadata
+
+1. Neuron metrics
+  - isolation quality measures
+  - waveform, features
+  - spike width
+  - neuron location
+
+2. Event-responses
+  - rasters
+  - PSTHs
+  - gaussian smoothed
+
+3. Behavior
+  - trial data
+
 ## input file structure
 
 these scripts assume that they are dealing with an experiment that has been sorted by phy. an example structure is as follows:
