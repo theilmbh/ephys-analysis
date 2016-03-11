@@ -62,6 +62,10 @@ def get_mean_fr(cluster, spikes, window):
 
 	return mean_fr
 
+def create_subwindows():
+	''' Create list of subwindows for cell group identification 
+	'''
+
 def calc_population_vectors(spikes, clusters, windows, thresh):
 	'''
 	Builds population vectors according to Curto and Itskov 2008
@@ -184,3 +188,25 @@ def build_perseus_input(cell_groups, savefile):
 			out_str = str(grp_dim) + ' ' + vert_str + ' 1\n'
 			#debug_print('Writing: %s' % out_str)
 			fd.write(out_str)
+
+def run_perseus(pfile):
+	''' Runs perseus persistent homology software on the data in pfile
+
+	Parameters
+	------
+	pfile : str 
+		file on which to compute homology
+
+	Returns
+	------
+	bettis : list
+		betti numbers
+
+	'''
+
+	bettis = 0
+	return bettis
+
+def calc_bettis(spikes, segment):
+	''' Calculate betti numbers for spike data in segment
+	'''
