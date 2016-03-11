@@ -149,10 +149,4 @@ def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 		active_cells = popvec[popvec[:, 2], 0]
 		cell_groups.append([win, active_cells])
 		
-
-
-
-
-
-
-
+	return cell_groups
