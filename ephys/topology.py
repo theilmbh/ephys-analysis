@@ -118,8 +118,8 @@ def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 
 	Returns
 	------
-	cellgroups : pandas dataframe 
-		Dataframe containing cell group information
+	cell_groups : list
+		list where each entry is a list containing a time window and the ID's of the cells in that group
 	'''
 
 	# Extract spikes within window
