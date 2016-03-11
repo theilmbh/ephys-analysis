@@ -161,6 +161,10 @@ def build_perseus_input(cell_groups, savefile):
 	savefile : str 
 		File in which to put the formatted cellgroup information
 
+	Yields
+	------
+	savefile : text File
+		file suitable for running perseus on
 	'''
 
 	with open(savefile, 'w+') as pfile:
