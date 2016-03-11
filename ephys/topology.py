@@ -62,7 +62,7 @@ def get_mean_fr(cluster, spikes, window):
 
 	return mean_fr
 
-def build_population_vectors(spikes, clusters, windows, thresh):
+def calc_population_vectors(spikes, clusters, windows, thresh):
 	'''
 	Builds population vectors according to Curto and Itskov 2008
 
@@ -95,7 +95,7 @@ def build_population_vectors(spikes, clusters, windows, thresh):
 		popvec_list.append([win, popvec])
 	return popvec_list
 
-def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, threshold=6., n_subwin=5):
+def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, threshold=6., n_subwin=5):
 	'''
 	Creates cell group dataframe according to Curto and Itskov 2008
 
@@ -139,7 +139,7 @@ def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],spikes,segment),axis=1)
 
 	# Build population vectors
-	population_vector_list = build_population_vectors(spikes, clusters, topology_subwindows)
+	population_vector_list = calc_population_vectors(spikes, clusters, topology_subwindows)
 
 	# Threshold firing rates
 	cell_groups = []
@@ -150,3 +150,33 @@ def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 		cell_groups.append([win, active_cells])
 		
 	return cell_groups
+
+def build_perseus_input(cell_groups, savefile):
+	''' Formats cell group information as input for perseus persistent homology software
+
+	Parameters
+	------
+	cell_groups : list 
+		cell_group information returned by calc_cell_groups
+	savefile : str 
+		File in which to put the formatted cellgroup information
+
+	'''
+
+	with open(savefile, 'w+') as pfile:
+		#write num coords per vertex
+		fd.write('1\n')
+		for win_grp in cell_groups:
+			grp = win_grp[1]
+			#debug_print('Cell group: ' + str(grp) +'\n')
+			grp_dim = len(grp) - 1
+			if grp_dim < 0:
+				continue
+			vert_str = str(grp)
+			vert_str = vert_str.replace('(', '')
+			vert_str = vert_str.replace(')', '')
+			vert_str = vert_str.replace(' ', '')
+			vert_str = vert_str.replace(',', ' ')
+			out_str = str(grp_dim) + ' ' + vert_str + ' 1\n'
+			#debug_print('Writing: %s' % out_str)
+			fd.write(out_str)
