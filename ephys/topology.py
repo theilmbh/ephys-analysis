@@ -62,9 +62,35 @@ def get_mean_fr(cluster, spikes, window):
 
 	return mean_fr
 
-def create_subwindows():
+def create_subwindows(segment, subwin_len, n_subwin_starts):
 	''' Create list of subwindows for cell group identification 
+
+	Parameters
+	------
+	segment : list
+		Beginning and end of the segment to subdivide into windows
+	subwin_len : int
+		number of samples to include in a subwindows
+	n_subwin_starts : int
+		number of shifts of the subwindows
+
+	Returns
+	------
+	subwindows : list 
+		list of subwindows
 	'''
+
+	starts_dt = np.floor(subwin_len / n_subwin_starts)
+	starts = np.arange(segment[0], segment[1], starts_dt)
+
+	subwindows = []
+	for start in starts:
+		subwin_front = np.arange(start, segment[1], subwin_len)
+		for front in subwin_front:
+			subwin_end = front + subwin_len
+			subwindows.append([front, subwin_end])
+
+	return subwindows
 
 def calc_population_vectors(spikes, clusters, windows, thresh):
 	'''
@@ -137,7 +163,7 @@ def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 		spikes = spikes[spikes['cluster'].isin(clusters['cluster'].values)]
 
 	# Create subwindows
-	topology_subwindows = create_subwindows()
+	topology_subwindows = create_subwindows(segment, subwin_len, n_subwin)
 
 	# Get mean and standard deviation of firing rate for each cluster
 	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],spikes,segment),axis=1)
