@@ -62,7 +62,7 @@ def get_mean_fr(cluster, spikes, window):
 
 	return mean_fr
 
-def build_population_vectors(spikes, clusters, windows):
+def build_population_vectors(spikes, clusters, windows, thresh):
 	'''
 	Builds population vectors according to Curto and Itskov 2008
 
@@ -74,6 +74,8 @@ def build_population_vectors(spikes, clusters, windows):
 		Dataframe containing cluster information
 	windows : tuple
 		The set of windows to compute population vectors for 
+	thresh : float
+		how many times above the mean the firing rate needs to be for it to count
 
 	Returns 
 	------
@@ -84,10 +86,12 @@ def build_population_vectors(spikes, clusters, windows):
 
 	popvec_list = []
 	for win in windows:
-		popvec = np.zeros([len(clusters.index), 2])
+		popvec = np.zeros([len(clusters.index), 3])
 		for ind, cluster in enumerate(clusters['cluster'].values):
-			popvec[ind, 1] = get_mean_fr(cluster, spikes, win)
+			fr = get_mean_fr(cluster, spikes, win)
+			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
+			popvec[ind, 2] = fr > 1.0*tresh*clusters[clusters['cluster']==cluster]['mean_fr']#wooboy
 		popvec_list.append([win, popvec])
 	return popvec_list
 
@@ -119,7 +123,7 @@ def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 	'''
 
 	# Extract spikes within window
-	spikes = spikes[np.logical_and(spikes['time_samples'] >= segment[0], spikes['time_samples'] <= segment[1])]
+	spikes = get_spikes_in_window(spikes, segment)
 
 	if cluster_group ~= None:
 		mask = np.ones(len(spikes.index)) < 0
@@ -132,15 +136,18 @@ def make_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 	topology_subwindows = create_subwindows()
 
 	# Get mean and standard deviation of firing rate for each cluster
-	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],spikes),axis=1)
+	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],spikes,segment),axis=1)
 
 	# Build population vectors
 	population_vector_list = build_population_vectors(spikes, clusters, topology_subwindows)
 
 	# Threshold firing rates
+	cell_groups = []
 	for population_vector_win in population_vector_list:
 		win = population_vector_win[0]
 		popvec = population_vector_win[1]
+		active_cells = popvec[popvec[:, 2], 0]
+		cell_groups.append([win, active_cells])
 		
 
 
