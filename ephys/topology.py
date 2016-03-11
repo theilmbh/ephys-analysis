@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 
 import events
 import core
@@ -228,7 +229,8 @@ def build_perseus_input(cell_groups, savefile):
 			fd.write(out_str)
 
 def run_perseus(pfile):
-	''' Runs perseus persistent homology software on the data in pfile
+	''' 
+	Runs perseus persistent homology software on the data in pfile
 
 	Parameters
 	------
@@ -241,8 +243,13 @@ def run_perseus(pfile):
 		betti numbers
 
 	'''
+	of_string, ext = os.path.splitext(pfile)
+	perseus_command = "perseus nmfsimtop {} {}".format(pfile, of_string)
 
-	bettis = 0
+	perseus_return_code = subprocess.call(perseus_command)
+	betti_file = of_string+'_betti.txt'
+	betti_file = os.path.join(os.path.split(pfile)[0], betti_file)
+
 	return bettis
 
 def calc_bettis(spikes, segment):
