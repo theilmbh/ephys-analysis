@@ -19,10 +19,12 @@ def get_spikes_in_window(spikes, window):
 	Returns
 	------
 	spikes_in_window : pandas DataFrame
-		DataFrame with same layout as input spikes but containing only spikes within window 
+		DataFrame with same layout as input spikes but containing only spikes 
+		within window 
 	'''
 
-	mask = (spikes['time_samples'] <= window[1]) & (spikes['time_samples']>=window[0])
+	mask = ((spikes['time_samples'] <= window[1]) & 
+			(spikes['time_samples']>=window[0]))
 	return spikes[mask]
 
 #todo: decorate
@@ -35,7 +37,8 @@ def get_mean_fr(cluster, spikes, window):
 	cluster : int
 		cluster id of the cluster to compute
 	spikes : pandas dataframe 
-		Contains the spike data.  Firing rate computed from this data over the window
+		Contains the spike data.  
+		Firing rate computed from this data over the window
 	window : tuple
 		time (samples) over which the spikes in 'spikes' occur.
 
@@ -99,18 +102,20 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 	Parameters
 	------
 	spikes : pandas DataFrame
-		DataFrame containing spike data. Must have 'fr_mean' column containing mean firing rate
+		DataFrame containing spike data. 
+		Must have 'fr_mean' column containing mean firing rate
 	clusters : pandas DataFrame
 		Dataframe containing cluster information
 	windows : tuple
 		The set of windows to compute population vectors for 
 	thresh : float
-		how many times above the mean the firing rate needs to be for it to count
+		how many times above the mean the firing rate needs to be
 
 	Returns 
 	------
 	popvec_list : list
-		population vector list.  Each element is a list containing the window and the population vector.
+		population vector list.  
+		Each element is a list containing the window and the population vector.
 		The population vector is an array containing cluster ID and firing rate. 
 	'''
 
@@ -121,11 +126,13 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 			fr = get_mean_fr(cluster, spikes, win)
 			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
-			popvec[ind, 2] = fr > 1.0*tresh*clusters[clusters['cluster']==cluster]['mean_fr']#wooboy
+			popvec[ind, 2] = fr > (1.0*tresh*clusters[
+								   clusters['cluster']==cluster]['mean_fr'])
 		popvec_list.append([win, popvec])
 	return popvec_list
 
-def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, threshold=6., n_subwin=5):
+def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
+					 threshold=6., n_subwin=5):
 	'''
 	Creates cell group dataframe according to Curto and Itskov 2008
 
@@ -142,14 +149,15 @@ def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 	subwin_len : int 
 		length (samples) for each subwin
 	threshold : float, optional 
-		Standard deviations above baseline firing rate to include activity in cell group
+		Multiples above baseline firing rate to include activity in cell group
 	n_subwin : int 
 		Number of subwindows to use to generate population vectors
 
 	Returns
 	------
 	cell_groups : list
-		list where each entry is a list containing a time window and the ID's of the cells in that group
+		list where each entry is a list containing a time window 
+		and the ID's of the cells in that group
 	'''
 
 	# Extract spikes within window
@@ -166,10 +174,12 @@ def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 	topology_subwindows = create_subwindows(segment, subwin_len, n_subwin)
 
 	# Get mean and standard deviation of firing rate for each cluster
-	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],spikes,segment),axis=1)
+	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],
+										 spikes,segment), axis=1)
 
 	# Build population vectors
-	population_vector_list = calc_population_vectors(spikes, clusters, topology_subwindows)
+	population_vector_list = calc_population_vectors(spikes, clusters, 
+													 topology_subwindows)
 
 	# Threshold firing rates
 	cell_groups = []
@@ -182,7 +192,9 @@ def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
 	return cell_groups
 
 def build_perseus_input(cell_groups, savefile):
-	''' Formats cell group information as input for perseus persistent homology software
+	''' 
+	Formats cell group information as input 
+	for perseus persistent homology software
 
 	Parameters
 	------
