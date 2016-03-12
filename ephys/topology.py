@@ -267,8 +267,9 @@ def calc_bettis(spikes, segment):
 
 	Returns
 	------
-	bettis : pandas DataFrame
-		betti numbers
+	bettis : list
+		betti numbers.  Each member is a list with the first member being 
+		filtration time and the second being betti numbers
 	'''
 
 	cell_groups = calc_cell_groups(spikes, segment, clusters, cluster_group, 
@@ -286,3 +287,8 @@ def calc_bettis(spikes, segment):
 			betti_numbers = int(betti_data)
 			bettis.append([filtration_time, betti_numbers])
 	return bettis
+
+def calc_bettis_on_dataset(block_path):
+	'''
+	Calculate bettis for each trial in a dataset and report statistics
+	'''
