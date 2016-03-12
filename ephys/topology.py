@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import subprocess
 
 import events
 import core
@@ -228,6 +229,8 @@ def build_perseus_input(cell_groups, savefile):
 			#debug_print('Writing: %s' % out_str)
 			fd.write(out_str)
 
+	return safefile
+
 def run_perseus(pfile):
 	''' 
 	Runs perseus persistent homology software on the data in pfile
@@ -239,19 +242,47 @@ def run_perseus(pfile):
 
 	Returns
 	------
-	bettis : list
-		betti numbers
+	betti_file : str
+		file containing resultant betti numbers
 
 	'''
 	of_string, ext = os.path.splitext(pfile)
 	perseus_command = "perseus nmfsimtop {} {}".format(pfile, of_string)
 
 	perseus_return_code = subprocess.call(perseus_command)
+	assert (perseus_return_code == 0), "Peseus Error!"
 	betti_file = of_string+'_betti.txt'
 	betti_file = os.path.join(os.path.split(pfile)[0], betti_file)
-
-	return bettis
+	return betti_file
 
 def calc_bettis(spikes, segment):
 	''' Calculate betti numbers for spike data in segment
+
+	Parameters
+	------
+	spikes : pandas DataFrame
+		dataframe containing spike data
+	segment :
+		time window of data to calculate betti numbers for
+
+	Returns
+	------
+	bettis : pandas DataFrame
+		betti numbers
 	'''
+
+	cell_groups = calc_cell_groups(spikes, segment, clusters, cluster_group, 
+								   subwin_len, theshold, n_subwin)
+
+	build_perseus_input(cell_groups, pfile)
+	betti_file = run_perseus(pfile)
+
+	bettis = []
+	with open(betti_file, 'r') as bf:
+		for bf_line in bf:
+			betti_data = bf_line.split()
+			nbetti = len(betti_data) - 1
+			filtration_time = int(betti_data[0])
+			betti_numbers = int(betti_data)
+			bettis.append([filtration_time, betti_numbers])
+	return bettis
