@@ -1,5 +1,5 @@
 import numpy as np
-from core import read_events, get_fs
+from core import load_events, get_fs
     
 class FindEnd():
     def __init__(self):
@@ -225,8 +225,8 @@ def get_trials(block_path):
         Whether the trial was correct or not 
 
     '''
-    digmarks = read_events(block_path,'DigMark')
-    stimulus = read_events(block_path,'Stimulus')
+    digmarks = load_events(block_path,'DigMark')
+    stimulus = load_events(block_path,'Stimulus')
     fs = get_fs(block_path)
     
     stim_end_mask = digmarks['codes'].isin(('>','#'))

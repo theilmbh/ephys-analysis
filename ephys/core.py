@@ -29,7 +29,7 @@ def file_finder(find_file_func):
     return decorated
 
 @file_finder
-def get_kwik(block_path):
+def find_kwik(block_path):
     '''
     Returns the kwik file found in the block path
     
@@ -45,7 +45,7 @@ def get_kwik(block_path):
     return os.path.join(block_path,'*.kwik')
 
 @file_finder
-def get_kwd(block_path):
+def find_kwd(block_path):
     '''
     Returns the raw.kwd file found in the block path
     
@@ -61,7 +61,7 @@ def get_kwd(block_path):
     return os.path.join(block_path,'*.raw.kwd')
 
 @file_finder
-def get_prb(block_path):
+def find_prb(block_path):
     '''
     Returns the *.prb file found in the block path
     
@@ -89,16 +89,16 @@ def load_probe(block_path):
     ------
     probe_info : dictionary of probe channels, geometry, and adjacencies
     '''
-    return imp.load_source('prb',get_prb(block_path))
+    return imp.load_source('prb',find_prb(block_path))
 
-def read_events(block_path,event_type):
+def load_events(block_path,event_type):
     '''
     Reads events from the kwik file associated with a block
 
     example use:
 
-    >>> digmarks = read_events(block_path,'DigMark')
-    >>> stimulus = read_events(block_path,'Stimulus')
+    >>> digmarks = load_events(block_path,'DigMark')
+    >>> stimulus = load_events(block_path,'Stimulus')
     
     Parameters
     ------
@@ -118,7 +118,7 @@ def read_events(block_path,event_type):
         text : text associated with the event (Stimulus only)
     
     '''
-    with h5.File(get_kwik(block_path),'r') as kf:
+    with h5.File(find_kwik(block_path),'r') as kf:
         events = {}
         for col in kf['/event_types'][event_type]:
             events[col] = kf['/event_types'][event_type][col][:]
@@ -138,7 +138,7 @@ def get_fs(block_path):
     fs : sampling rate in Hz
     
     '''
-    with h5.File(get_kwik(block_path),'r') as kf:
+    with h5.File(find_kwik(block_path),'r') as kf:
         fs = kf['/recordings/0'].attrs['sample_rate']
     return fs
 
@@ -168,11 +168,11 @@ def get_qual(block_path,cluster):
         one of the following: ('Noise', 'MUA', 'Good', 'unsorted')
     
     '''
-    with h5.File(get_kwik(block_path),'r') as kf:
+    with h5.File(find_kwik(block_path),'r') as kf:
         qual = kf['/channel_groups/0/clusters/main/']["%i" % cluster].attrs['cluster_group']
     return QUAL_LOOKUP[qual]
 
-def get_clusters(block_path,channel_group=0,clustering='main'):
+def load_clusters(block_path,channel_group=0,clustering='main'):
     '''
     Returns a dataframe of clusters observed in kwik file
 
@@ -193,7 +193,7 @@ def get_clusters(block_path,channel_group=0,clustering='main'):
         quality : cluster quality from manual sort ('Noise', 'MUA', 'Good', 'unsorted')
 
     '''    
-    with h5.File(get_kwik(block_path),'r') as kf:
+    with h5.File(find_kwik(block_path),'r') as kf:
         observed_clusters = np.unique(
             kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:]
             )
@@ -201,7 +201,8 @@ def get_clusters(block_path,channel_group=0,clustering='main'):
         clusters['quality'] = clusters['cluster'].map(lambda clu: get_qual(block_path,clu))
     return clusters
 
-def get_spikes(block_path,channel_group=0,clustering='main',noise=False):
+
+def load_spikes(block_path,channel_group=0,clustering='main'):
     '''
     Returns a pandas dataframe of spikes observed in kwik file
     
@@ -224,23 +225,14 @@ def get_spikes(block_path,channel_group=0,clustering='main',noise=False):
         recording : recording ID of the spike
         time_samples : time stamp (samples) of the spike
 
-    ''' 
-    with h5.File(get_kwik(block_path),'r') as kf:
+    '''
+    with h5.File(find_kwik(block_path),'r') as kf:
         spikes = pd.DataFrame(
             dict(cluster=kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:],
                 recording=kf['/channel_groups/{}/spikes/recording'.format(channel_group)][:],
                 time_samples=kf['/channel_groups/{}/spikes/time_samples'.format(channel_group)][:],
                 )
             )
-
-        if noise:
-            return spikes
-        else:
-            clusters = get_clusters(block_bath)
-            nonnoise_clusters = clusters['quality']~='Noise'
-            nonnoise_spikes = spikes[spikes['cluster'].isin(nonnoise_clusters)]
-            return spikes
-
 
 def merge_spike_qual(spikes, clusters):
     '''
