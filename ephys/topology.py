@@ -133,8 +133,10 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 		popvec_list.append([win, popvec])
 	return popvec_list
 
-def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len, 
-					 threshold=6., n_subwin=5):
+DEFAULT_CG_PARAMS = {'cluster_group': None, 'subwin_len': 100, 'threshold': 6.0
+					 'n_subwin': 5}
+
+def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	'''
 	Creates cell group dataframe according to Curto and Itskov 2008
 
@@ -146,14 +148,16 @@ def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len,
 		time window for which to create cell groups 
 	clusters : pandas DataFrame
 		dataframe containing cluster information
-	cluster_group : str, optional
-		Quality of the clusters to include in the analysis (Good, MUA, etc)
-	subwin_len : int 
-		length (samples) for each subwin
-	threshold : float, optional 
-		Multiples above baseline firing rate to include activity in cell group
-	n_subwin : int 
-		Number of subwindows to use to generate population vectors
+	cg_params : dict, optional
+		Parameters for cell group creation.  Includes: 
+		cluster_group : str
+			Quality of the clusters to include in the analysis (Good, MUA, etc)
+		subwin_len : int 
+			length (samples) for each subwin
+		threshold : float, optional 
+			Multiples above baseline firing rate to include activity
+		n_subwin : int 
+			Number of subwindows to use to generate population vectors
 
 	Returns
 	------
@@ -161,6 +165,11 @@ def calc_cell_groups(spikes, segment, clusters, cluster_group=None, subwin_len,
 		list where each entry is a list containing a time window 
 		and the ID's of the cells in that group
 	'''
+
+	cluster_group = cg_params['cluster_group']
+	subwin_len 	  = cg_params['subwin_len']
+	threshold     = cg_params['threshold']
+	n_subwin      = cg_params['n_subwin']
 
 	# Extract spikes within window
 	spikes = get_spikes_in_window(spikes, segment)
@@ -255,15 +264,17 @@ def run_perseus(pfile):
 	betti_file = os.path.join(os.path.split(pfile)[0], betti_file)
 	return betti_file
 
-def calc_bettis(spikes, segment):
+def calc_bettis(spikes, segment, cg_params=DEFAULT_CG_PARAMS):
 	''' Calculate betti numbers for spike data in segment
 
 	Parameters
 	------
 	spikes : pandas DataFrame
 		dataframe containing spike data
-	segment :
-		time window of data to calculate betti numbers for
+	segment : list
+		time window of data to calculate betti numbers
+	cg_params : dict
+		Parameters for CG generation
 
 	Returns
 	------
@@ -272,8 +283,7 @@ def calc_bettis(spikes, segment):
 		filtration time and the second being betti numbers
 	'''
 
-	cell_groups = calc_cell_groups(spikes, segment, clusters, cluster_group, 
-								   subwin_len, theshold, n_subwin)
+	cell_groups = calc_cell_groups(spikes, segment, clusters, cg_params)
 
 	build_perseus_input(cell_groups, pfile)
 	betti_file = run_perseus(pfile)
