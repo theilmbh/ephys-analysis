@@ -292,3 +292,15 @@ def calc_bettis_on_dataset(block_path):
 	'''
 	Calculate bettis for each trial in a dataset and report statistics
 	'''
+
+	spikes = core.load_spikes(block_path)
+	clusters = core.load_clusters(block_path)
+	trials = events.get_trials(block_path)
+	fs = get_fs(block_path)
+
+	# Make a list of all the stimuli 
+	stims = set(trials['stimulus'].values)
+	for stim in stims:
+		stim_trials = trials[trials['stimulus']==stim]
+		nreps = len(stim_trials.index)
+
