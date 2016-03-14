@@ -176,7 +176,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	spikes = get_spikes_in_window(spikes, segment)
 
 	if cluster_group != None:
-		mask = np.ones(len(spikes.index)) < 0
+		mask = np.ones(len(clusters.index)) < 0
 		for grp in cluster_group:
 			mask = np.logical_or(mask, clusters['quality'] == grp)
 		clusters = clusters[mask]
