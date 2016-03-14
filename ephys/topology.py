@@ -133,7 +133,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 		popvec_list.append([win, popvec])
 	return popvec_list
 
-DEFAULT_CG_PARAMS = {'cluster_group': None, 'subwin_len': 100, 'threshold': 6.0
+DEFAULT_CG_PARAMS = {'cluster_group': None, 'subwin_len': 100, 'threshold': 6.0,
 					 'n_subwin': 5}
 
 def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
