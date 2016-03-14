@@ -173,17 +173,20 @@ def get_consequence(trial_row,digmarks,fs,window=2.0):
     '''
     rec,samps = trial_row['recording'], trial_row['time_samples']
     rt = trial_row['response_time']
-    bds = rt, rt+fs*window
-    resp_mask = (
-        (digmarks['recording']==rec)
-        & (digmarks['time_samples']>bds[0])
-        & (digmarks['time_samples']<bds[1])
-        & digmarks['codes'].str.contains('[FfTt]')
-        )
-    if digmarks[resp_mask].shape[0]>0:
-        return digmarks[resp_mask].iloc[0]
-    else:
+    if np.isnan(rt):
         return dict(codes=np.nan,time_samples=np.nan,recording=np.nan)
+    else:
+        bds = rt, rt+fs*window
+        resp_mask = (
+            (digmarks['recording']==rec)
+            & (digmarks['time_samples']>bds[0])
+            & (digmarks['time_samples']<bds[1])
+            & digmarks['codes'].str.contains('[FfTt]')
+            )
+        if digmarks[resp_mask].shape[0]>0:
+            return digmarks[resp_mask].iloc[0]
+        else:
+            return dict(codes=np.nan,time_samples=np.nan,recording=np.nan)
 
 def is_correct(consequence):
     '''
