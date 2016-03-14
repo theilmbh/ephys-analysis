@@ -334,7 +334,10 @@ def calc_bettis_on_dataset(block_path, cluster_group=None):
 			assert (len(bettis[0]) == 1), "Too many filtrations"
 			trial_bettis 		= bettis[1]
 			stim_bettis[rep, :] = trial_bettis
-
+		stim_bettis_frame = pd.DataFrame(stim_bettis)
+		betti_savefile = kwikname + '_stim{}'.format(stim) + '_betti.csv'
+		betti_savefile = os.path.join(block_path, betti_savefile)
+		stim_bettis_frame.to_csv(betti_savefile, index_label='rep')
 
 
 
