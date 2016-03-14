@@ -233,6 +233,7 @@ def load_spikes(block_path,channel_group=0,clustering='main'):
                 time_samples=kf['/channel_groups/{}/spikes/time_samples'.format(channel_group)][:],
                 )
             )
+    return spikes
 
 def merge_spike_qual(spikes, clusters):
     '''
