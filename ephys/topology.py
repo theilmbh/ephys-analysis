@@ -302,7 +302,7 @@ def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 			bettis.append([filtration_time, betti_numbers])
 	return bettis
 
-def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms):
+def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 	'''
 	Calculate bettis for each trial in a dataset and report statistics
 	'''
