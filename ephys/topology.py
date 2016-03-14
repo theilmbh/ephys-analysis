@@ -291,10 +291,10 @@ def calc_bettis(spikes, segment, cg_params=DEFAULT_CG_PARAMS):
 	bettis = []
 	with open(betti_file, 'r') as bf:
 		for bf_line in bf:
-			betti_data = bf_line.split()
-			nbetti = len(betti_data) - 1
+			betti_data 		= bf_line.split()
+			nbetti 			= len(betti_data)-1
 			filtration_time = int(betti_data[0])
-			betti_numbers = int(betti_data)
+			betti_numbers 	= int(betti_data[1:])
 			bettis.append([filtration_time, betti_numbers])
 	return bettis
 
@@ -308,9 +308,16 @@ def calc_bettis_on_dataset(block_path):
 	trials = events.get_trials(block_path)
 	fs = get_fs(block_path)
 
-	# Make a list of all the stimuli 
+	windt_samps = np.floor(windt_ms*(fs/1000.))
+
 	stims = set(trials['stimulus'].values)
 	for stim in stims:
 		stim_trials = trials[trials['stimulus']==stim]
-		nreps = len(stim_trials.index)
+		nreps 		= len(stim_trials.index)
+		for rep in range(nreps):
+			trial_start = stim_trials.iloc[rep]['time_samples']
+			trial_end 	= stim_trials.iloc[rep]['stimulus_end']
+
+
+
 
