@@ -84,7 +84,7 @@ def create_subwindows(segment, subwin_len, n_subwin_starts):
 	subwindows : list 
 		list of subwindows
 	'''
-
+	print('Building subwindows...')
 	starts_dt = np.floor(subwin_len / n_subwin_starts)
 	starts = np.arange(segment[0], segment[1], starts_dt)
 
@@ -120,7 +120,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 		Each element is a list containing the window and the population vector.
 		The population vector is an array containing cluster ID and firing rate. 
 	'''
-
+	print('Building population vectors...')
 	popvec_list = []
 	for win in windows:
 		popvec = np.zeros([len(clusters.index), 3])
@@ -166,6 +166,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 		and the ID's of the cells in that group
 	'''
 
+	print('Creating cellgroups...')
 	cluster_group = cg_params['cluster_group']
 	subwin_len 	  = cg_params['subwin_len']
 	threshold     = cg_params['threshold']
@@ -219,7 +220,7 @@ def build_perseus_input(cell_groups, savefile):
 	savefile : text File
 		file suitable for running perseus on
 	'''
-
+	print('Building Perseus input...')
 	with open(savefile, 'w+') as pfile:
 		#write num coords per vertex
 		fd.write('1\n')
@@ -255,6 +256,7 @@ def run_perseus(pfile):
 		file containing resultant betti numbers
 
 	'''
+	print('Running Perseus...')
 	of_string, ext = os.path.splitext(pfile)
 	perseus_command = "perseus nmfsimtop {} {}".format(pfile, of_string)
 
@@ -284,7 +286,7 @@ def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 		betti numbers.  Each member is a list with the first member being 
 		filtration time and the second being betti numbers
 	'''
-
+	print('In calc_bettis')
 	cell_groups = calc_cell_groups(spikes, segment, clusters, cg_params)
 
 	build_perseus_input(cell_groups, pfile)
@@ -318,6 +320,7 @@ def calc_bettis_on_dataset(block_path, cluster_group=None):
 
 	stims = set(trials['stimulus'].values)
 	for stim in stims:
+		print('Calculating bettis for stim: {}'.format(stim))
 		stim_trials = trials[trials['stimulus']==stim]
 		nreps 		= len(stim_trials.index)
 		stim_bettis = np.zeros([nreps, maxbetti])
