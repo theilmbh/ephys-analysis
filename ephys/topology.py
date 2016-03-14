@@ -264,7 +264,7 @@ def run_perseus(pfile):
 	betti_file = os.path.join(os.path.split(pfile)[0], betti_file)
 	return betti_file
 
-def calc_bettis(spikes, segment, cg_params=DEFAULT_CG_PARAMS):
+def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	''' Calculate betti numbers for spike data in segment
 
 	Parameters
@@ -273,6 +273,8 @@ def calc_bettis(spikes, segment, cg_params=DEFAULT_CG_PARAMS):
 		dataframe containing spike data
 	segment : list
 		time window of data to calculate betti numbers
+	clusters : pandas Dataframe
+		dataframe containing cluster data
 	cg_params : dict
 		Parameters for CG generation
 
@@ -298,10 +300,14 @@ def calc_bettis(spikes, segment, cg_params=DEFAULT_CG_PARAMS):
 			bettis.append([filtration_time, betti_numbers])
 	return bettis
 
-def calc_bettis_on_dataset(block_path):
+def calc_bettis_on_dataset(block_path, cluster_group=None):
 	'''
 	Calculate bettis for each trial in a dataset and report statistics
 	'''
+
+	maxbetti = 10
+	kwikfile = core.find_kwik(block_path)
+	kwikname = os.path.splitext(os.path.basename(kwikfile))
 
 	spikes = core.load_spikes(block_path)
 	clusters = core.load_clusters(block_path)
@@ -314,9 +320,26 @@ def calc_bettis_on_dataset(block_path):
 	for stim in stims:
 		stim_trials = trials[trials['stimulus']==stim]
 		nreps 		= len(stim_trials.index)
+		stim_bettis = np.zeros([nreps, maxbetti])
 		for rep in range(nreps):
 			trial_start = stim_trials.iloc[rep]['time_samples']
 			trial_end 	= stim_trials.iloc[rep]['stimulus_end']
+
+			cg_params 					= DEFAULT_CG_PARAMS
+			cg_params['subwin_len'] 	= windt_samps
+			cg_params['cluster_group'] 	= cluster_group
+
+			bettis = calc_bettis(spikes, [trial_start, trial_end], 
+								 clusters, cg_params)
+			assert (len(bettis[0]) == 1), "Too many filtrations"
+			trial_bettis 		= bettis[1]
+			stim_bettis[rep, :] = trial_bettis
+
+
+
+
+
+
 
 
 
