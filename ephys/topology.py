@@ -273,8 +273,8 @@ def build_perseus_input(cell_groups, savefile):
 			if grp_dim < 0:
 				continue
 			vert_str = str(grp)
-			vert_str = vert_str.replace('(', '')
-			vert_str = vert_str.replace(')', '')
+			vert_str = vert_str.replace('[', '')
+			vert_str = vert_str.replace(']', '')
 			vert_str = vert_str.replace(' ', '')
 			vert_str = vert_str.replace(',', ' ')
 			out_str = str(grp_dim) + ' ' + vert_str + ' 1\n'
