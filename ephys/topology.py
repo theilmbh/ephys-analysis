@@ -165,7 +165,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 			fr = calc_mean_fr_int(cluster, spikes, win)
 			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
-			popvec[ind, 2] = fr > (1.0*tresh*clusters[
+			popvec[ind, 2] = fr > (1.0*thresh*clusters[
 								   clusters['cluster']==cluster]['mean_fr'])
 		popvec_list.append([win, popvec])
 	return popvec_list
