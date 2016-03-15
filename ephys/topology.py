@@ -123,7 +123,7 @@ def create_subwindows(segment, subwin_len, n_subwin_starts):
 	'''
 	print('Building subwindows...')
 	starts_dt = np.floor(subwin_len / n_subwin_starts)
-	starts = np.arange(segment[0], segment[1], starts_dt)
+	starts = np.arange(segment[0], segment[0]+subwin_len, starts_dt)
 
 	subwindows = []
 	for start in starts:
