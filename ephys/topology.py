@@ -162,7 +162,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 	for win in windows:
 		popvec = np.zeros([len(clusters.index), 3])
 		for ind, cluster in enumerate(clusters['cluster'].values):
-			fr = calc_mean_fr(cluster, spikes, win)
+			fr = calc_mean_fr_int(cluster, spikes, win)
 			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
 			popvec[ind, 2] = fr > (1.0*tresh*clusters[
