@@ -30,14 +30,14 @@ def get_spikes_in_window(spikes, window):
 	return spikes[mask]
 
 #todo: decorate
-def get_mean_fr(cluster, spikes, window):
+def calc_mean_fr(row, spikes, window):
 	'''
 	Computes the mean firing rate of a unit within the given spikes DataFrame
 
 	Parameters
 	------
-	cluster : int
-		cluster id of the cluster to compute
+	row : pandas dataframe row
+		row of cluster dataframe containing clusterID to compute
 	spikes : pandas dataframe 
 		Contains the spike data.  
 		Firing rate computed from this data over the window
@@ -49,7 +49,7 @@ def get_mean_fr(cluster, spikes, window):
 	mean_fr : float 
 		Mean firing rate over the interval
 	'''
-
+	cluster = row['cluster']
 	# Get all spikes from the cluster
 	spikes = spikes[spikes['cluster']==cluster]
 
@@ -186,7 +186,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	topology_subwindows = create_subwindows(segment, subwin_len, n_subwin)
 
 	# Get mean and standard deviation of firing rate for each cluster
-	clusters['fr_mean'] = clusters.apply(lambda row: get_mean_fr(row['cluster'],
+	clusters['fr_mean'] = clusters.apply(lambda row: calc_mean_fr(row,
 										 spikes,segment), axis=1)
 
 	# Build population vectors
