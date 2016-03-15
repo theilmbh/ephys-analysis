@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import os
+import os, sys
 import subprocess
 
 import events
@@ -162,6 +162,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 	popvec_list = []
 	for win_num, win in enumerate(windows):
 		print("Window {} of {}".format(str(win_num), str(total_win)))
+		sys.stdout.flush()
 		popvec = np.zeros([len(clusters.index), 3])
 		for ind, cluster in enumerate(clusters['cluster'].values):
 			fr = calc_mean_fr_int(cluster, spikes, win)
