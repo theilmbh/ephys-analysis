@@ -192,7 +192,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 
 	# Extract spikes within window
 	spikes = get_spikes_in_window(spikes, segment)
-
+	print(segment)
 	if cluster_group != None:
 		mask = np.ones(len(clusters.index)) < 0
 		for grp in cluster_group:
@@ -200,6 +200,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 		clusters = clusters[mask]
 		spikes = spikes[spikes['cluster'].isin(clusters['cluster'].values)]
 
+	print(spikes)
 	# Create subwindows
 	topology_subwindows = create_subwindows(segment, subwin_len, n_subwin)
 
