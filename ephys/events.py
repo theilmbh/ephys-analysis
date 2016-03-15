@@ -70,10 +70,8 @@ def get_stim_info(trial_row,stimulus,fs):
     rec,samps = trial_row['recording'], trial_row['time_samples']
     stim_mask = (
         (stimulus['recording']==rec)
-        & (stimulus['time_samples']>(samps-0.1*fs))
+        & (stimulus['time_samples']>(samps-1.0*fs))
         & (stimulus['time_samples']<(samps+fs))
-        & ~stimulus['text'].str.contains('date')
-        & stimulus['text'].apply(_is_not_floatable) # occlude floats
         )
     
     if stim_mask.sum()>0:
@@ -173,20 +171,17 @@ def get_consequence(trial_row,digmarks,fs,window=2.0):
     '''
     rec,samps = trial_row['recording'], trial_row['time_samples']
     rt = trial_row['response_time']
-    if np.isnan(rt):
-        return dict(codes=np.nan,time_samples=np.nan,recording=np.nan)
+    bds = rt, rt+fs*window
+    resp_mask = (
+        (digmarks['recording']==rec)
+        & (digmarks['time_samples']>bds[0])
+        & (digmarks['time_samples']<bds[1])
+        & digmarks['codes'].str.contains('[FfTt]')
+        )
+    if digmarks[resp_mask].shape[0]>0:
+        return digmarks[resp_mask].iloc[0]
     else:
-        bds = rt, rt+fs*window
-        resp_mask = (
-            (digmarks['recording']==rec)
-            & (digmarks['time_samples']>bds[0])
-            & (digmarks['time_samples']<bds[1])
-            & digmarks['codes'].str.contains('[FfTt]')
-            )
-        if digmarks[resp_mask].shape[0]>0:
-            return digmarks[resp_mask].iloc[0]
-        else:
-            return dict(codes=np.nan,time_samples=np.nan,recording=np.nan)
+        return dict(codes=np.nan,time_samples=np.nan,recording=np.nan)
 
 def is_correct(consequence):
     '''
@@ -230,6 +225,14 @@ def get_trials(block_path):
     '''
     digmarks = load_events(block_path,'DigMark')
     stimulus = load_events(block_path,'Stimulus')
+
+    digmarks = digmarks[digmarks['codes']!='C']
+    stimulus = load_events(block_path,'Stimulus')
+    stim_mask = (
+        ~stimulus['text'].str.contains('date')
+        & stimulus['text'].apply(_is_not_floatable) # occlude floats
+        )
+    stimulus = stimulus[stim_mask]
     fs = get_fs(block_path)
     
     stim_end_mask = digmarks['codes'].isin(('>','#'))

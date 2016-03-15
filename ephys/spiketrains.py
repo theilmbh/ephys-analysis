@@ -1,3 +1,4 @@
+import numpy as np
 
 def get_spiketrain(rec,samps,clu,spikes,window,fs):
     '''
@@ -24,10 +25,16 @@ def get_spiketrain(rec,samps,clu,spikes,window,fs):
     spike_train : numpy array of spike times in seconds
     '''
     bds = [w*fs+samps for w in window]
+
     window_mask = (
-        (spikes['recording']==rec)
-        & (spikes['time_samples']>bds[0])
+        (spikes['time_samples']>bds[0])
         & (spikes['time_samples']<=bds[1])
         )
-    clu_mask = spikes['cluster']==clu
-    return (spikes['time_samples'][window_mask & clu_mask].values.astype(np.float_) - samps) / fs
+    
+    perievent_spikes = spikes[window_mask]
+    
+    mask = (
+        (perievent_spikes['recording']==rec)
+        & (perievent_spikes['cluster']==clu)
+        )
+    return (perievent_spikes['time_samples'][mask].values.astype(np.float_) - samps) / fs
