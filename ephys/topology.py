@@ -81,8 +81,9 @@ def calc_mean_fr(cluster_row, spikes, window):
 	
 	# Compute firing rate
 	mean_fr = (1.0*nspikes) / dt
+	retframe = pd.DataFrame({'mean_fr': [mean_fr]})
 	
-	return pd.DataFrame({'mean_fr': [mean_fr]})
+	return retframe.iloc[0]
 
 def create_subwindows(segment, subwin_len, n_subwin_starts):
 	''' Create list of subwindows for cell group identification 
