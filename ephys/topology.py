@@ -265,7 +265,7 @@ def build_perseus_input(cell_groups, savefile):
 	print('Building Perseus input...')
 	with open(savefile, 'w+') as pfile:
 		#write num coords per vertex
-		fd.write('1\n')
+		pfile.write('1\n')
 		for win_grp in cell_groups:
 			grp = win_grp[1]
 			#debug_print('Cell group: ' + str(grp) +'\n')
@@ -279,9 +279,9 @@ def build_perseus_input(cell_groups, savefile):
 			vert_str = vert_str.replace(',', ' ')
 			out_str = str(grp_dim) + ' ' + vert_str + ' 1\n'
 			#debug_print('Writing: %s' % out_str)
-			fd.write(out_str)
+			pfile.write(out_str)
 
-	return safefile
+	return savefile
 
 def run_perseus(pfile):
 	''' 
