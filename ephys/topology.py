@@ -390,7 +390,7 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 			bettis = calc_bettis(spikes, [trial_start, trial_end], 
 								 clusters, pfile, cg_params)
 			assert (len(bettis) == 1), "Too many filtrations"
-			trial_bettis 						 = np.ndarray(bettis[1])
+			trial_bettis 						 = np.ndarray(bettis[0][1])
 			stim_bettis[rep, :len(trial_bettis)] = trial_bettis
 
 		stim_bettis_frame = pd.DataFrame(stim_bettis)
