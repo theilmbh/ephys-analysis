@@ -71,16 +71,16 @@ def calc_mean_fr(cluster, spikes, window):
 
 	# Get all of the spikes within the time window
 	spikes = get_spikes_in_window(spikes, window)
-
+	print(spikes.head())
 	# Compute number of spikes
 	nspikes = len(spikes.index)
-
+	print(nspikes)
 	# Compute duration
 	dt = window[1] - window[0]
-
+	print(dt)
 	# Compute firing rate
 	mean_fr = (1.0*nspikes) / dt
-
+	print(mean_fr)
 	return mean_fr
 
 def create_subwindows(segment, subwin_len, n_subwin_starts):
