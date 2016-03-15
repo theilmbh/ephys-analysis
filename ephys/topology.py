@@ -45,8 +45,8 @@ def mean_fr_decorator(mean_fr_func):
 
 	return decorated
 
-@mean_fr_decorator
-def calc_mean_fr(cluster, spikes, window):
+
+def calc_mean_fr(cluster_row, spikes, window):
 	'''
 	Computes the mean firing rate of a unit within the given spikes DataFrame
 
@@ -65,23 +65,24 @@ def calc_mean_fr(cluster, spikes, window):
 	mean_fr : float 
 		Mean firing rate over the interval
 	'''
-	
+	cluster = cluster_row['cluster']
+
 	# Get all spikes from the cluster
 	spikes = spikes[spikes['cluster']==cluster]
 
 	# Get all of the spikes within the time window
 	spikes = get_spikes_in_window(spikes, window)
-	print(spikes.head())
+	
 	# Compute number of spikes
 	nspikes = len(spikes.index)
-	print(nspikes)
+	
 	# Compute duration
 	dt = window[1] - window[0]
-	print(dt)
+	
 	# Compute firing rate
 	mean_fr = (1.0*nspikes) / dt
-	print(mean_fr)
-	return mean_fr
+	
+	return pd.DataFrame({'mean_fr': mean_fr})
 
 def create_subwindows(segment, subwin_len, n_subwin_starts):
 	''' Create list of subwindows for cell group identification 
