@@ -300,7 +300,7 @@ def run_perseus(pfile):
 	'''
 	print('Running Perseus...')
 	of_string, ext = os.path.splitext(pfile)
-	perseus_command = "perseus nmfsimtop {} {}".format(pfile, of_string)
+	perseus_command = "/home/btheilma/bin/perseus nmfsimtop {} {}".format(pfile, of_string)
 
 	perseus_return_code = subprocess.call(perseus_command)
 	assert (perseus_return_code == 0), "Peseus Error!"
