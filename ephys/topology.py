@@ -85,6 +85,25 @@ def calc_mean_fr(cluster_row, spikes, window):
 	
 	return retframe.iloc[0]
 
+def calc_mean_fr_int(cluster, spikes, window):
+	''' Does the same as above, but for ints.  This is bad.  Fix this
+	'''
+	# Get all spikes from the cluster
+	spikes = spikes[spikes['cluster']==cluster]
+
+	# Get all of the spikes within the time window
+	spikes = get_spikes_in_window(spikes, window)
+	
+	# Compute number of spikes
+	nspikes = len(spikes.index)
+	
+	# Compute duration
+	dt = window[1] - window[0]
+	
+	# Compute firing rate
+	mean_fr = (1.0*nspikes) / dt
+	return mean_fr	
+
 def create_subwindows(segment, subwin_len, n_subwin_starts):
 	''' Create list of subwindows for cell group identification 
 
