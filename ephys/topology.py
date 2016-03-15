@@ -34,10 +34,10 @@ def mean_fr_decorator(mean_fr_func):
 	def decorated(cluster_row, *args, **kwargs):
 		try:
 			int(cluster_row)
-			mean_fr = mean_fr_func(cluster_row)
+			mean_fr = mean_fr_func(cluster_row, *args, **kwargs)
 			return mean_fr
 		except ValueError:
-			mean_fr = mean_fr_func(cluster_row['cluster'])
+			mean_fr = mean_fr_func(cluster_row['cluster'], *args, **kwargs)
 			return mean_fr
 
 	return decorated
