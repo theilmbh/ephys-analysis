@@ -300,9 +300,10 @@ def run_perseus(pfile):
 	'''
 	print('Running Perseus...')
 	of_string, ext = os.path.splitext(pfile)
-	perseus_command = "/home/btheilma/bin/perseus nmfsimtop {} {}".format(pfile, of_string)
+	perseus_command = "/home/btheilma/bin/perseus" 
+	perseus_args = "nmfsimtop {} {}".format(pfile, of_string)
 
-	perseus_return_code = subprocess.call(perseus_command)
+	perseus_return_code = subprocess.call([perseus_command, perseus_args])
 	assert (perseus_return_code == 0), "Peseus Error!"
 	betti_file = of_string+'_betti.txt'
 	betti_file = os.path.join(os.path.split(pfile)[0], betti_file)
