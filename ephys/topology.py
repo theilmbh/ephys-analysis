@@ -308,7 +308,7 @@ def run_perseus(pfile):
 	betti_file = os.path.join(os.path.split(pfile)[0], betti_file)
 	return betti_file
 
-def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
+def calc_bettis(spikes, segment, clusters, pfile, cg_params=DEFAULT_CG_PARAMS):
 	''' Calculate betti numbers for spike data in segment
 
 	Parameters
@@ -319,6 +319,8 @@ def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 		time window of data to calculate betti numbers
 	clusters : pandas Dataframe
 		dataframe containing cluster data
+	pfile : str
+		file in which to save simplex data
 	cg_params : dict
 		Parameters for CG generation
 
@@ -331,8 +333,6 @@ def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	print('In calc_bettis')
 	cell_groups = calc_cell_groups(spikes, segment, clusters, cg_params)
 
-	pf = tempfile.NamedTemporaryFile(mode='w+b', delete=False)
-	pfile = pf.name
 	build_perseus_input(cell_groups, pfile)
 	betti_file = run_perseus(pfile)
 
@@ -368,7 +368,14 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 		stim_trials = trials[trials['stimulus']==stim]
 		nreps 		= len(stim_trials.index)
 		stim_bettis = np.zeros([nreps, maxbetti])
+		pfile = kwikname + '_stim{}'.format(stim) + '_rep{}'.format(int(rep))
+		betti_savefile = kwikname + '_stim{}'.format(stim) + '_betti.csv'
+		betti_savefile = os.path.join(block_path, betti_savefile)
 		for rep in range(nreps):
+			pfile = kwikname + '_stim{}'.format(stim) + \
+					'_rep{}'.format(int(rep)) + '_simplex.txt'
+			pfile = os.path.join(block_path, pfile)
+
 			trial_start = stim_trials.iloc[rep]['time_samples']
 			trial_end 	= stim_trials.iloc[rep]['stimulus_end']
 
@@ -377,13 +384,12 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 			cg_params['cluster_group'] 	= cluster_group
 
 			bettis = calc_bettis(spikes, [trial_start, trial_end], 
-								 clusters, cg_params)
+								 clusters, pfile, cg_params)
 			assert (len(bettis[0]) == 1), "Too many filtrations"
 			trial_bettis 		= bettis[1]
 			stim_bettis[rep, :] = trial_bettis
 		stim_bettis_frame = pd.DataFrame(stim_bettis)
-		betti_savefile = kwikname + '_stim{}'.format(stim) + '_betti.csv'
-		betti_savefile = os.path.join(block_path, betti_savefile)
+
 		stim_bettis_frame.to_csv(betti_savefile, index_label='rep')
 
 
