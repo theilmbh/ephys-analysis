@@ -29,8 +29,13 @@ def get_spikes_in_window(spikes, window):
 			(spikes['time_samples']>=window[0]))
 	return spikes[mask]
 
+def mean_fr_decorator(mean_fr_funct):
+
+	def decorated(*args, **kwargs):
+		
+
 #todo: decorate
-def calc_mean_fr(row, spikes, window):
+def calc_mean_fr(cluster, spikes, window):
 	'''
 	Computes the mean firing rate of a unit within the given spikes DataFrame
 
@@ -49,7 +54,7 @@ def calc_mean_fr(row, spikes, window):
 	mean_fr : float 
 		Mean firing rate over the interval
 	'''
-	cluster = row['cluster']
+	
 	# Get all spikes from the cluster
 	spikes = spikes[spikes['cluster']==cluster]
 
@@ -125,7 +130,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 	for win in windows:
 		popvec = np.zeros([len(clusters.index), 3])
 		for ind, cluster in enumerate(clusters['cluster'].values):
-			fr = get_mean_fr(cluster, spikes, win)
+			fr = calc_mean_fr(cluster, spikes, win)
 			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
 			popvec[ind, 2] = fr > (1.0*tresh*clusters[
