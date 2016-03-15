@@ -240,7 +240,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	for population_vector_win in population_vector_list:
 		win = population_vector_win[0]
 		popvec = population_vector_win[1]
-		active_cells = popvec[(popvec[:, 2].astype(int)), 0]
+		active_cells = popvec[(popvec[:, 2].astype(bool)), 0].astype(int)
 		cell_groups.append([win, active_cells])
 		
 	return cell_groups
