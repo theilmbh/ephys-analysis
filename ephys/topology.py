@@ -161,7 +161,7 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 	total_win = len(windows)
 	popvec_list = []
 	for win_num, win in enumerate(windows):
-		if np.mod(win_num, 50)==0:
+		if np.mod(win_num, 500)==0:
 			print("Window {} of {}".format(str(win_num), str(total_win)))
 			sys.stdout.flush()
 		popvec = np.zeros([len(clusters.index), 3])
