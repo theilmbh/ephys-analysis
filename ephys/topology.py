@@ -331,6 +331,8 @@ def calc_bettis(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	print('In calc_bettis')
 	cell_groups = calc_cell_groups(spikes, segment, clusters, cg_params)
 
+	pf = tempfile.NamedTemporaryFile(mode='w+b', delete=False)
+	pfile = pf.name
 	build_perseus_input(cell_groups, pfile)
 	betti_file = run_perseus(pfile)
 
