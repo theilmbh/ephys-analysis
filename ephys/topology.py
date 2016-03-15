@@ -158,8 +158,10 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 		The population vector is an array containing cluster ID and firing rate. 
 	'''
 	print('Building population vectors...')
+	total_win = len(windows)
 	popvec_list = []
-	for win in windows:
+	for win_num, win in enumerate(windows):
+		print("Window {} of {}".format(str(win_num), str(total_win)))
 		popvec = np.zeros([len(clusters.index), 3])
 		for ind, cluster in enumerate(clusters['cluster'].values):
 			fr = calc_mean_fr_int(cluster, spikes, win)
