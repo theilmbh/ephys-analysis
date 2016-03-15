@@ -32,12 +32,15 @@ def get_spikes_in_window(spikes, window):
 def mean_fr_decorator(mean_fr_func):
 
 	def decorated(cluster_row, *args, **kwargs):
+		print(cluster_row)
 		try:
 			int(cluster_row)
 			mean_fr = mean_fr_func(cluster_row, *args, **kwargs)
+			print(pd.DataFrame({'mean_fr': mean_fr}))
 			return pd.DataFrame({'mean_fr': mean_fr})
 		except ValueError:
 			mean_fr = mean_fr_func(cluster_row['cluster'], *args, **kwargs)
+			print(pd.DataFrame({'mean_fr': mean_fr}))
 			return pd.DataFrame({'mean_fr': mean_fr})
 
 	return decorated
