@@ -267,7 +267,7 @@ def build_perseus_input(cell_groups, savefile):
 		#write num coords per vertex
 		pfile.write('1\n')
 		for win_grp in cell_groups:
-			grp = win_grp[1]
+			grp = list(win_grp[1])
 			#debug_print('Cell group: ' + str(grp) +'\n')
 			grp_dim = len(grp) - 1
 			if grp_dim < 0:
