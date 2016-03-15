@@ -161,8 +161,9 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 	total_win = len(windows)
 	popvec_list = []
 	for win_num, win in enumerate(windows):
-		print("Window {} of {}".format(str(win_num), str(total_win)))
-		sys.stdout.flush()
+		if np.mod(win_num, 50)==0:
+			print("Window {} of {}".format(str(win_num), str(total_win)))
+			sys.stdout.flush()
 		popvec = np.zeros([len(clusters.index), 3])
 		for ind, cluster in enumerate(clusters['cluster'].values):
 			fr = calc_mean_fr_int(cluster, spikes, win)
@@ -239,7 +240,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	for population_vector_win in population_vector_list:
 		win = population_vector_win[0]
 		popvec = population_vector_win[1]
-		active_cells = popvec[popvec[:, 2], 0]
+		active_cells = popvec[(popvec[:, 2].astype(int)), 0]
 		cell_groups.append([win, active_cells])
 		
 	return cell_groups
