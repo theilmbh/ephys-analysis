@@ -341,10 +341,12 @@ def calc_bettis(spikes, segment, clusters, pfile, cg_params=DEFAULT_CG_PARAMS):
 	bettis = []
 	with open(betti_file, 'r') as bf:
 		for bf_line in bf:
+			if len(bf_line)<2:
+				continue
 			betti_data 		= bf_line.split()
 			nbetti 			= len(betti_data)-1
 			filtration_time = int(betti_data[0])
-			betti_numbers 	= int(betti_data[1:])
+			betti_numbers 	= map(int, betti_data[1:])
 			bettis.append([filtration_time, betti_numbers])
 	return bettis
 
@@ -388,17 +390,8 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 			bettis = calc_bettis(spikes, [trial_start, trial_end], 
 								 clusters, pfile, cg_params)
 			assert (len(bettis[0]) == 1), "Too many filtrations"
-			trial_bettis 		= bettis[1]
-			stim_bettis[rep, :] = trial_bettis
+			trial_bettis 						 = np.ndarray(bettis[1])
+			stim_bettis[rep, :len(trial_bettis)] = trial_bettis
+
 		stim_bettis_frame = pd.DataFrame(stim_bettis)
-
 		stim_bettis_frame.to_csv(betti_savefile, index_label='rep')
-
-
-
-
-
-
-
-
-
