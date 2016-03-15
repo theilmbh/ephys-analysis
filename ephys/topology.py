@@ -35,10 +35,10 @@ def mean_fr_decorator(mean_fr_func):
 		try:
 			int(cluster_row)
 			mean_fr = mean_fr_func(cluster_row, *args, **kwargs)
-			return pd.Series(mean_fr)
+			return pd.DataFrame({'mean_fr': mean_fr})
 		except ValueError:
 			mean_fr = mean_fr_func(cluster_row['cluster'], *args, **kwargs)
-			return pd.Series(mean_fr)
+			return pd.DataFrame({'mean_fr': mean_fr})
 
 	return decorated
 
@@ -200,7 +200,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 
 	# Get mean and standard deviation of firing rate for each cluster
 	clusters['fr_mean'] = clusters.apply(lambda row: calc_mean_fr(row,
-										 spikes,segment), axis=1)
+										 spikes,segment)['mean_fr'], axis=1)
 
 	# Build population vectors
 	population_vector_list = calc_population_vectors(spikes, clusters, 
