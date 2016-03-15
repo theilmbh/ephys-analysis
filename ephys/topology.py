@@ -223,7 +223,7 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	topology_subwindows = create_subwindows(segment, subwin_len, n_subwin)
 
 	# Get mean and standard deviation of firing rate for each cluster
-	clusters['fr_mean'] = clusters.apply(lambda row: calc_mean_fr(row,
+	clusters['mean_fr'] = clusters.apply(lambda row: calc_mean_fr(row,
 										 spikes,segment)['mean_fr'], axis=1)
 
 	# Build population vectors
