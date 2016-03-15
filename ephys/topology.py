@@ -29,12 +29,20 @@ def get_spikes_in_window(spikes, window):
 			(spikes['time_samples']>=window[0]))
 	return spikes[mask]
 
-def mean_fr_decorator(mean_fr_funct):
+def mean_fr_decorator(mean_fr_func):
 
-	def decorated(*args, **kwargs):
-		
+	def decorated(cluster_row, *args, **kwargs):
+		try:
+			int(cluster_row)
+			mean_fr = mean_fr_func(cluster_row)
+			return mean_fr
+		except ValueError:
+			mean_fr = mean_fr_func(cluster_row['cluster'])
+			return mean_fr
 
-#todo: decorate
+	return decorated
+
+@mean_fr_decorator
 def calc_mean_fr(cluster, spikes, window):
 	'''
 	Computes the mean firing rate of a unit within the given spikes DataFrame
