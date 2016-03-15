@@ -166,13 +166,13 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 			print("Cluster: {}".format(str(cluster)))
 			print("FR: {}".format(str(fr)))
 			print("test_fr: {}".format(str((1.0*thresh*clusters[
-								   clusters['cluster']==cluster]['mean_fr']))))
+								   clusters['cluster']==cluster]['mean_fr']).values)))
 			print("fr>:{}".format(str(fr > (1.0*thresh*clusters[
-								   clusters['cluster']==cluster]['mean_fr']))))
+								   clusters['cluster']==cluster]['mean_fr']).values)))
 			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
 			popvec[ind, 2] = fr > (1.0*thresh*clusters[
-								   clusters['cluster']==cluster]['mean_fr'])
+								   clusters['cluster']==cluster]['mean_fr']).values
 		popvec_list.append([win, popvec])
 	return popvec_list
 
