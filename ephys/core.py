@@ -60,6 +60,23 @@ def find_kwd(block_path):
     '''
     return os.path.join(block_path,'*.raw.kwd')
 
+
+@file_finder
+def get_kwx(block_path):
+    '''
+    Returns the kwx file found in the block path
+    
+    Parameters
+    ------
+    block_path : str
+        path to the block
+    
+    Returns
+    ------
+    kwx : full path name to kwx file
+    '''
+    return os.path.join(block_path,'*.kwx')
+
 @file_finder
 def find_prb(block_path):
     '''
@@ -75,6 +92,22 @@ def find_prb(block_path):
     prb : full path name to *.prb file
     '''
     return os.path.join(block_path,'*.prb')
+
+@file_finder
+def get_info(block_path):
+    '''
+    Returns the raw.kwd file found in the block path
+    
+    Parameters
+    ------
+    block_path : str
+        path to the block
+    
+    Returns
+    ------
+    kwd : full path name to _info.json file
+    '''
+    return os.path.join(block_path,'*_info.json')
 
 def load_probe(block_path):
     '''
@@ -224,8 +257,8 @@ def load_spikes(block_path,channel_group=0,clustering='main'):
         cluster : cluster ID of the spike 
         recording : recording ID of the spike
         time_samples : time stamp (samples) of the spike
-
     '''
+
     with h5.File(find_kwik(block_path),'r') as kf:
         spikes = pd.DataFrame(
             dict(cluster=kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:],
