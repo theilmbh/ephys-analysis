@@ -351,9 +351,9 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 	Calculate bettis for each trial in a dataset and report statistics
 	'''
 
-	maxbetti = 10
-	kwikfile = core.find_kwik(block_path)
-	kwikname = os.path.splitext(os.path.basename(kwikfile))
+	maxbetti 	  = 10
+	kwikfile 	  = core.find_kwik(block_path)
+	kwikname, ext = os.path.splitext(os.path.basename(kwikfile))
 
 	spikes 	 = core.load_spikes(block_path)
 	clusters = core.load_clusters(block_path)
@@ -368,6 +368,7 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 		stim_trials = trials[trials['stimulus']==stim]
 		nreps 		= len(stim_trials.index)
 		stim_bettis = np.zeros([nreps, maxbetti])
+
 		betti_savefile = kwikname + '_stim{}'.format(stim) + '_betti.csv'
 		betti_savefile = os.path.join(block_path, betti_savefile)
 		for rep in range(nreps):
