@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import sys
 import os
-sys.path.append('/home/btheilma/brad/code/ephys-analysis/')
-from ephys import topology
+sys.path.append('/home/btheilma/brad/code/ephys-analysis/ephys')
+import topology
 
 
 def get_args():
