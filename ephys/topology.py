@@ -5,7 +5,6 @@ import subprocess
 
 import events
 import core
-import spiketrains as spt
 
 def get_spikes_in_window(spikes, window):
 	'''
@@ -24,10 +23,10 @@ def get_spikes_in_window(spikes, window):
 		DataFrame with same layout as input spikes but containing only spikes 
 		within window 
 	'''
-
 	mask = ((spikes['time_samples']<=window[1]) & 
 			(spikes['time_samples']>=window[0]))
 	return spikes[mask]
+
 
 def mean_fr_decorator(mean_fr_func):
 
@@ -66,43 +65,25 @@ def calc_mean_fr(cluster_row, spikes, window):
 		Mean firing rate over the interval
 	'''
 	cluster = cluster_row['cluster']
-
-	# Get all spikes from the cluster
 	spikes = spikes[spikes['cluster']==cluster]
-
-	# Get all of the spikes within the time window
 	spikes = get_spikes_in_window(spikes, window)
-	
-	# Compute number of spikes
 	nspikes = len(spikes.index)
-	
-	# Compute duration
 	dt = window[1] - window[0]
-	
-	# Compute firing rate
 	mean_fr = (1.0*nspikes) / dt
 	retframe = pd.DataFrame({'mean_fr': [mean_fr]})
-	
 	return retframe.iloc[0]
+
 
 def calc_mean_fr_int(cluster, spikes, window):
 	''' Does the same as above, but for ints.  This is bad.  Fix this
 	'''
-	# Get all spikes from the cluster
 	spikes = spikes[spikes['cluster']==cluster]
-
-	# Get all of the spikes within the time window
 	spikes = get_spikes_in_window(spikes, window)
-	
-	# Compute number of spikes
 	nspikes = len(spikes.index)
-	
-	# Compute duration
 	dt = window[1] - window[0]
-	
-	# Compute firing rate
 	mean_fr = (1.0*nspikes) / dt
 	return mean_fr	
+
 
 def create_subwindows(segment, subwin_len, n_subwin_starts):
 	''' Create list of subwindows for cell group identification 
@@ -133,6 +114,7 @@ def create_subwindows(segment, subwin_len, n_subwin_starts):
 			subwindows.append([front, subwin_end])
 
 	return subwindows
+
 
 def calc_population_vectors(spikes, clusters, windows, thresh):
 	'''
@@ -169,14 +151,14 @@ def calc_population_vectors(spikes, clusters, windows, thresh):
 			fr = calc_mean_fr_int(cluster, spikes, win)
 			popvec[ind, 1] = fr
 			popvec[ind, 0] = cluster
-			popvec[ind, 2] = fr > (1.0*thresh*clusters[
-								   clusters['cluster']==cluster]['mean_fr']).values
+			popvec[ind, 2] = fr>(1.0*thresh*clusters[
+								clusters['cluster']==cluster]['mean_fr']).values
 		popvec_list.append([win, popvec])
 	return popvec_list
 
+
 DEFAULT_CG_PARAMS = {'cluster_group': None, 'subwin_len': 100, 'threshold': 6.0,
 					 'n_subwin': 5}
-
 def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	'''
 	Creates cell group dataframe according to Curto and Itskov 2008
@@ -213,7 +195,6 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 	threshold     = cg_params['threshold']
 	n_subwin      = cg_params['n_subwin']
 
-	# Extract spikes within window
 	spikes = get_spikes_in_window(spikes, segment)
 	if cluster_group != None:
 		mask = np.ones(len(clusters.index)) < 0
@@ -222,24 +203,18 @@ def calc_cell_groups(spikes, segment, clusters, cg_params=DEFAULT_CG_PARAMS):
 		clusters = clusters[mask]
 		spikes = spikes[spikes['cluster'].isin(clusters['cluster'].values)]
 
-	
-	# Create subwindows
 	topology_subwindows = create_subwindows(segment, subwin_len, n_subwin)
 
-	# Get mean and standard deviation of firing rate for each cluster
 	clusters['mean_fr'] = clusters.apply(lambda row: calc_mean_fr(row,
 										 spikes,segment)['mean_fr'], axis=1)
-
 	# Build population vectors
 	population_vector_list = calc_population_vectors(spikes, clusters, 
 													 topology_subwindows, 
 													 threshold)
-
-	# Threshold firing rates
 	cell_groups = []
 	for population_vector_win in population_vector_list:
-		win = population_vector_win[0]
-		popvec = population_vector_win[1]
+		win 		 = population_vector_win[0]
+		popvec 		 = population_vector_win[1]
 		active_cells = popvec[(popvec[:, 2].astype(bool)), 0].astype(int)
 		cell_groups.append([win, active_cells])
 		
@@ -277,7 +252,7 @@ def build_perseus_input(cell_groups, savefile):
 			vert_str = vert_str.replace(']', '')
 			vert_str = vert_str.replace(' ', '')
 			vert_str = vert_str.replace(',', ' ')
-			out_str = str(grp_dim) + ' ' + vert_str + ' 1\n'
+			out_str  = str(grp_dim) + ' ' + vert_str + ' 1\n'
 			#debug_print('Writing: %s' % out_str)
 			pfile.write(out_str)
 
