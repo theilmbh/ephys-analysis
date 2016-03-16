@@ -25,7 +25,7 @@ def get_spikes_in_window(spikes, window):
 		within window 
 	'''
 
-	mask = ((spikes['time_samples'] <= window[1]) & 
+	mask = ((spikes['time_samples']<=window[1]) & 
 			(spikes['time_samples']>=window[0]))
 	return spikes[mask]
 
@@ -350,11 +350,64 @@ def calc_bettis(spikes, segment, clusters, pfile, cg_params=DEFAULT_CG_PARAMS):
 			bettis.append([filtration_time, betti_numbers])
 	return bettis
 
-def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
+
+DEFAULT_SEGMENT_INFO = {'period': 'stim'}
+def get_segment(trial_bounds, fs, segment_info):
 	'''
-	Calculate bettis for each trial in a dataset and report statistics
+	Use segment info to determine segment to compute topology for 
+
+	Parameters
+	------
+	trial_bounds : list
+		List containing trial start and trial end in samples
+	fs : int 
+		The sampling rate 
+	segment_info : dict
+		Dictionary containing:
+		'period' (stim or ?)
+		'segstart' : time in ms of segment start relative to trial start 
+		'segend' : time in ms of segment end relative to trial start
+
+	Returns
+	------
+	segment : list 
+		bounds for the segment to compute topology for, in samples 
+
 	'''
 
+	if segment_info['period'] == 'stim':
+		return trial_bounds
+	else:
+		seg_start = trial_bounds[0] + np.floor(segment_info['segstart']*(fs/1000.))
+		seg_end = trial_bounds[0] + np.floor(segment_info['segend']*(fs/1000.))
+	return [seg_start, seg_end]
+
+
+def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50., 
+						   segment_info=DEFAULT_SEGMENT_INFO):
+	'''
+	Calculate bettis for each trial in a dataset and report statistics
+
+	Parameters
+	------
+	block_path : str 
+		Path to directory containing data files 
+	cluster_group : list
+		list of cluster qualities to include in analysis 
+	windt_ms : float, optional
+		window width in milliseconds
+	segment_info : dict 
+		dictionary containing information on which segment to compute topology
+		'period' (stim or ?)
+		'segstart' : time in ms of segment start relative to trial start 
+		'segend' : time in ms of segment end relative to trial start
+	
+	Yields
+	------
+	betti_savefile : file
+		File containing betti numbers for each trial for a given stimulus
+		For all stimuli	
+	'''
 	maxbetti 	  = 10
 	kwikfile 	  = core.find_kwik(block_path)
 	kwikname, ext = os.path.splitext(os.path.basename(kwikfile))
@@ -386,6 +439,8 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.):
 			cg_params 					= DEFAULT_CG_PARAMS
 			cg_params['subwin_len'] 	= windt_samps
 			cg_params['cluster_group'] 	= cluster_group
+
+			segment = get_segment([trial_start, trial_end], fs, segment_info)
 
 			bettis = calc_bettis(spikes, [trial_start, trial_end], 
 								 clusters, pfile, cg_params)
