@@ -24,7 +24,7 @@ def main():
 	
 	topology.calc_bettis_on_dataset(block_path, 
 									cluster_group=cluster_group, 
-									windt_ms=windt., 
+									windt_ms=windt, 
 									segment_info=segment_info)
 
 
