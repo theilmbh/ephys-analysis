@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys
 import os
-from ephys import topology as top
+sys.path.append('/home/btheilma/brad/code/ephys-analysis/')
+from ephys import topology
 
 
 def get_args():
