@@ -13,7 +13,7 @@ def get_args():
 												 'extracellular dataset')
 	parser.add_argument('block_path', type=str, help='Path to folder'
 													 'containing data files')
-
+	return parser.parse_args()
 
 def main():
 
