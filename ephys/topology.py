@@ -416,8 +416,12 @@ def calc_bettis_on_dataset(block_path, cluster_group=None, windt_ms=50.,
             cg_params['cluster_group']  = cluster_group
 
             segment = get_segment([trial_start, trial_end], fs, segment_info)
-
-            bettis = calc_bettis(spikes, [trial_start, trial_end], 
+            print('Trial bounds: {}  {}'.format(str(trial_start), 
+                                                str(trial_end)))
+            print('Segment bounds: {}  {}'.format(str(segment[0]), 
+                                                  str(segment[1])))
+            
+            bettis = calc_bettis(spikes, segment, 
                                  clusters, pfile, cg_params)
             assert (len(bettis) == 1), "Too many filtrations"
             trial_bettis                         = bettis[0][1]
