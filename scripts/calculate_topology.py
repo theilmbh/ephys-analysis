@@ -13,6 +13,13 @@ def get_args():
 												 'extracellular dataset')
 	parser.add_argument('block_path', type=str, help='Path to folder'
 													 'containing data files')
+	parser.add_argument('period', type=str, help='either stim or prestim')
+	parser.add_argument('segstart', type=float, help='Time in milliseconds of ' 
+													 'start to include relative' 
+													 ' to stimulus start')
+	parser.add_argument('segend', type=float, help='Time in milliseconds of end'
+												   'to include relative to '
+												   ' stimulus start')
 	return parser.parse_args()
 
 def main():
@@ -21,7 +28,9 @@ def main():
 
 	block_path = os.path.abspath(args.block_path)
 	cluster_group = ['Good']
-	segment_info = {'period': 'prestim', 'segstart': -2000.0, 'segend': 0.0}
+	segment_info = {'period': args.period, 
+					'segstart': args.segstart, 
+					'segend': args.segend}
 	windt = 50.
 	
 	topology.calc_bettis_on_dataset(block_path, 
