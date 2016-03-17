@@ -13,6 +13,7 @@ def get_args():
 												 'extracellular dataset')
 	parser.add_argument('block_path', type=str, help='Path to folder'
 													 'containing data files')
+	parser.add_argument('windt', type=float, help='Window width in ms')
 	parser.add_argument('period', type=str, help='either stim or prestim')
 	parser.add_argument('segstart', type=float, help='Time in milliseconds of ' 
 													 'start to include relative' 
@@ -31,7 +32,7 @@ def main():
 	segment_info = {'period': args.period, 
 					'segstart': args.segstart, 
 					'segend': args.segend}
-	windt = 50.
+	windt = args.windt
 	
 	topology.calc_bettis_on_dataset(block_path, 
 									cluster_group=cluster_group, 
