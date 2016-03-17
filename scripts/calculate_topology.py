@@ -21,7 +21,7 @@ def main():
 
 	block_path = os.path.abspath(args.block_path)
 	cluster_group = ['Good']
-	segment_info = {'period': 'prestim', 'segstart': -2.0, 'segend': 0.0}
+	segment_info = {'period': 'prestim', 'segstart': -2000.0, 'segend': 0.0}
 	windt = 50.
 	
 	topology.calc_bettis_on_dataset(block_path, 
