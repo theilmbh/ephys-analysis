@@ -28,8 +28,8 @@ def do_raster(raster_data, times, ticks, ax=None):
 	ntrials = len(raster_data)
 	if ax is None:
 		ax = plt.gca()
-	ax.xlim(times)
-	ax.ylim([1, ntrials])
+	ax.set_xlim(times)
+	ax.set_ylim((1, ntrials))
 	for trial, trialdata in enumerate(raster_data):
 		ypts = [1+trial, 2+trial]
 		for spiketime in trialdata:
