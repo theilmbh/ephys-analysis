@@ -59,7 +59,7 @@ def plot_raster_cell_stim(block_path, clusterID, stim, period, rec):
 	raster_data = []
 	for trial, start in enumerate(stim_starts):
 		
-		sptrain = get_spiketrain(rec, start, clusterID, spikes, window)
+		sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
 		raster_data.append(sptrain)
 
 	do_raster(raster_data, window, [0, stim_end_seconds])
