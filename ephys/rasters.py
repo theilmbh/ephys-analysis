@@ -1,6 +1,7 @@
 from spiketrains import get_spiketrain
 import core
 import events
+import numpy as np
 
 import matplotlib.pyplot as plt 
 
