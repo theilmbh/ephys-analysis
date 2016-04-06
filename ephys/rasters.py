@@ -55,7 +55,7 @@ def plot_raster_cell_stim(block_path, clusterID, stim, period):
 	stim_ends = stim_trials['stimulus_end'].values
 
 	stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
-	window = [period[0], stim_end_seonds[trial]+period[1]]
+	window = [period[0], stim_end_seconds[trial]+period[1]]
 	raster_data = []
 	for trial, start in enumerate(stim_starts):
 		
