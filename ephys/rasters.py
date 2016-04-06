@@ -43,7 +43,7 @@ def do_raster(raster_data, times, ticks, ax=None):
 
 
 
-def plot_raster_cell_stim(block_path, clusterID, stim, period):
+def plot_raster_cell_stim(block_path, clusterID, stim, period, rec):
 
 	spikes = core.load_spikes(block_path)
 	trials = events.load_trials(block_path)
