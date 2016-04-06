@@ -36,7 +36,7 @@ def do_raster(raster_data, times, ticks, ax=None):
 			ax.plot([spiketime, spiketime], ypts, 'k', lw=1.5)
 
 	for pltticks in ticks:
-		ax.plot([pltticks, pltticks], [1, ntrials], 'r', lw=1.5)
+		ax.plot([pltticks, pltticks], [1, ntrials+1], 'r', lw=1.5)
 
 	return ax
 
