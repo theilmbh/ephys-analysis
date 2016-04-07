@@ -100,3 +100,20 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
                   spike_color=plot_params['spike_color'],
                   tick_linewidth=plot_params['tick_linewidth'],
                   tick_color=plot_params['tick_color'])
+
+def gaussian_psth_func(times, spike_data, sigma):
+    '''
+    Generates a gaussian psth from spike data 
+
+    Parameters
+    ------
+    times : numpy array 
+        times to generate psth for 
+    spike_data : list of floats 
+        times of each spike 
+    sigma : float   
+        standard deviation of the gaussian 
+    '''
+    output = np.zeros(len(times))
+    for spike_time in spike_data:
+        output = output+np.exp(-1.0*np.square(times-spike_time)/(2*sigma**2))
