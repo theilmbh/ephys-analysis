@@ -5,7 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 
-def do_raster(raster_data, times, ticks, ax=None):
+def do_raster(raster_data, times, ticks, ax=None, spike_linewidth=1.5, 
+              spike_color='k', tick_linewidth=1.5, tick_color='r'):
     '''
     Generalized raster plotting function
 
@@ -20,13 +21,20 @@ def do_raster(raster_data, times, ticks, ax=None):
         Will add a vertical tick across the whole plot for each time in list
     ax : Matplotlib axes handle, optional 
         Axes on which to produce raster. Default gca.
+    spike_linewidth : float, optional   
+        width in points of ticks for spikes
+    spike_color : str 
+        color of ticks for spikes 
+    tick_linewidth : float 
+        width in points of ticks for events 
+    tick_color  : str 
+        color of ticks for events
 
     Returns
     ------
     raster_plot : 
         Handle to the raster plot 
     '''
-
     ntrials = len(raster_data)
     if ax is None:
         ax = plt.gca()
@@ -35,15 +43,16 @@ def do_raster(raster_data, times, ticks, ax=None):
     for trial, trialdata in enumerate(raster_data):
         ypts = [1+trial, 2+trial]
         for spiketime in trialdata:
-            ax.plot([spiketime, spiketime], ypts, 'k', lw=1.5)
+            ax.plot([spiketime, spiketime], ypts, spike_color, 
+                    lw=spike_linewidth)
     for pltticks in ticks:
-        ax.plot([pltticks, pltticks], [1, ntrials+1], 'r', lw=1.5)
-
+        ax.plot([pltticks, pltticks], [1, ntrials+1], tick_color, 
+                lw=tick_linewidth)
     return ax
 
 
 def plot_raster_cell_stim(spikes, trials, clusterID, 
-                          stim, period, rec, fs, ax=None):
+                          stim, period, rec, fs, plot_params=None, ax=None):
     '''
     Plots a spike raster for a single cell and stimulus 
 
@@ -63,21 +72,31 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
     rec : int 
         Recording ID 
     fs : float 
-        Sampling rate 
+        Sampling rate
+    plot_params : dict
+        Drawing parameters:
+        'spike_linewidth' - linewidth of ticks for spikes 
+        'tick_linewidth' - linewidth of ticks for event markers
+        'spike_color' - color of spike ticks 
+        'tick_color' - color of event ticks 
     ax : Matplotlib axes handle, optional
         Axes on which to produce the raster.  Default is to use gca 
     ''' 
-
     stim_trials = trials[trials['stimulus']==stim]
     ntrials = len(stim_trials)
     stim_starts = stim_trials['time_samples'].values
     stim_ends = stim_trials['stimulus_end'].values
     stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
     window = [period[0], stim_end_seconds+period[1]]
-    
     raster_data = []
     for trial, start in enumerate(stim_starts):
         sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
         raster_data.append(sptrain)
-
-    do_raster(raster_data, window, [0, stim_end_seconds], ax)
+    if plot_params == None:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax)
+    else:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
+                  spike_linewidth=plot_params['spike_linewidth'],
+                  spike_color=plot_params['spike_color'],
+                  tick_linewidth=plot_params['tick_linewidth'],
+                  tick_color=plot_params['tick_color'])
