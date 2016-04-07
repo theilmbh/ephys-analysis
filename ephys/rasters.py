@@ -19,6 +19,8 @@ def do_raster(raster_data, times, ticks, ax=None):
 		The beginning and end times to plot 
 	ticks : list of floats
 		Will add a vertical tick across the whole plot for each time in this list
+	ax : Matplotlib axes handle, optional 
+		Axes on which to produce raster. Default gca.
 
 	Returns
 	------
@@ -43,7 +45,29 @@ def do_raster(raster_data, times, ticks, ax=None):
 
 
 
-def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs):
+def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs, ax=None):
+	'''
+	Plots a spike raster for a single cell and stimulus 
+
+	Parameters
+	------
+	spikes : pandas dataframe
+		spike dataframe from core 
+	trials : pandas dataframe
+		trials dataframe from events
+	clusterID : int
+		ID number of the cluster you wish to make the raster for 
+	stim : str 
+		Name of the stimulus you wish to plot cluster's activity for 
+	period : list of floats 
+		Time window for the raster.  [Seconds_pre_stimulus_onset, Seconds_post_stimulus_end]
+	rec : int 
+		Recording ID 
+	fs : float 
+		Sampling rate 
+	ax : Matplotlib axes handle, optional
+		Axes on which to produce the raster.  Default is to use gca 
+ 	''' 
 
 
 	stim_trials = trials[trials['stimulus']==stim]
@@ -59,5 +83,5 @@ def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs):
 		sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
 		raster_data.append(sptrain)
 
-	do_raster(raster_data, window, [0, stim_end_seconds])
+	do_raster(raster_data, window, [0, stim_end_seconds], ax)
 
