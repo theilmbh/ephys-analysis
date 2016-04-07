@@ -2,7 +2,6 @@ from spiketrains import get_spiketrain
 import core
 import events
 import numpy as np
-
 import matplotlib.pyplot as plt 
 
 
@@ -18,7 +17,7 @@ def do_raster(raster_data, times, ticks, ax=None):
 	times : list of floats
 		The beginning and end times to plot 
 	ticks : list of floats
-		Will add a vertical tick across the whole plot for each time in this list
+		Will add a vertical tick across the whole plot for each time in list
 	ax : Matplotlib axes handle, optional 
 		Axes on which to produce raster. Default gca.
 
@@ -37,15 +36,14 @@ def do_raster(raster_data, times, ticks, ax=None):
 		ypts = [1+trial, 2+trial]
 		for spiketime in trialdata:
 			ax.plot([spiketime, spiketime], ypts, 'k', lw=1.5)
-
 	for pltticks in ticks:
 		ax.plot([pltticks, pltticks], [1, ntrials+1], 'r', lw=1.5)
 
 	return ax
 
 
-
-def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs, ax=None):
+def plot_raster_cell_stim(spikes, trials, clusterID, 
+						  stim, period, rec, fs, ax=None):
 	'''
 	Plots a spike raster for a single cell and stimulus 
 
@@ -60,7 +58,8 @@ def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs, ax=N
 	stim : str 
 		Name of the stimulus you wish to plot cluster's activity for 
 	period : list of floats 
-		Time window for the raster.  [Seconds_pre_stimulus_onset, Seconds_post_stimulus_end]
+		Time window for the raster:  
+		[Seconds_pre_stimulus_onset, Seconds_post_stimulus_end]
 	rec : int 
 		Recording ID 
 	fs : float 
@@ -69,14 +68,13 @@ def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs, ax=N
 		Axes on which to produce the raster.  Default is to use gca 
  	''' 
 
-
 	stim_trials = trials[trials['stimulus']==stim]
 	ntrials = len(stim_trials)
 	stim_starts = stim_trials['time_samples'].values
 	stim_ends = stim_trials['stimulus_end'].values
-
 	stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
 	window = [period[0], stim_end_seconds+period[1]]
+	
 	raster_data = []
 	for trial, start in enumerate(stim_starts):
 		
@@ -84,4 +82,3 @@ def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs, ax=N
 		raster_data.append(sptrain)
 
 	do_raster(raster_data, window, [0, stim_end_seconds], ax)
-
