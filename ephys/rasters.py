@@ -43,12 +43,9 @@ def do_raster(raster_data, times, ticks, ax=None):
 
 
 
-def plot_raster_cell_stim(block_path, clusterID, stim, period, rec):
+def plot_raster_cell_stim(spikes, trials, clusterID, stim, period, rec, fs):
 
-	spikes = core.load_spikes(block_path)
-	trials = events.load_trials(block_path)
-	fs = core.load_fs(block_path)
-	
+
 	stim_trials = trials[trials['stimulus']==stim]
 	ntrials = len(stim_trials)
 	stim_starts = stim_trials['time_samples'].values
