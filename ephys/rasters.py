@@ -93,8 +93,11 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
         sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
         raster_data.append(sptrain)
     if plot_params == None:
+        print('none plot param')
         do_raster(raster_data, window, [0, stim_end_seconds], ax)
+        
     else:
+        print('plot param')
         do_raster(raster_data, window, [0, stim_end_seconds], ax, 
                   spike_linewidth=plot_params['spike_linewidth'],
                   spike_color=plot_params['spike_color'],
