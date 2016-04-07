@@ -117,3 +117,4 @@ def gaussian_psth_func(times, spike_data, sigma):
     output = np.zeros(len(times))
     for spike_time in spike_data:
         output = output+np.exp(-1.0*np.square(times-spike_time)/(2*sigma**2))
+    return output
