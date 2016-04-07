@@ -2,6 +2,7 @@ from spiketrains import get_spiketrain
 import core
 import events
 import numpy as np
+import scipy.stats as stats
 import matplotlib.pyplot as plt 
 
 
@@ -118,3 +119,58 @@ def gaussian_psth_func(times, spike_data, sigma):
     for spike_time in spike_data:
         output = output+np.exp(-1.0*np.square(times-spike_time)/(2*sigma**2))
     return output
+
+def calc_avg_gaussian_psth(spikes, trials, clusterID, stim, period, rec, fs, sigma=0.05, alpha=0.95):
+    ''' 
+    Calculates a gaussian smoothed average psth over all trials of stim for a given cluster.
+
+    Parameters 
+    ------
+    spikes : dataframe 
+        spike data
+    trials : dataframe 
+        trial data 
+    clusterID : int 
+        cluster ID to compute 
+    stim : str 
+        Stim name 
+    period : list of floats 
+        period in seconds before/after stim 
+    rec : int 
+        recording id 
+    fs : float 
+        sampling rate 
+    sigma : float 
+        stand deviation for gaussian 
+    alpha : float 
+        confidence level 
+
+    Returns 
+    ------
+    avg_psth : numpy array 
+        the average gaussian psth 
+    std_psth :
+        standard deviation of the psth 
+    conf_ints :
+        confidence intervals 
+    times : 
+        times for the signals 
+    '''
+
+    stim_trials = trials[trials['stimulus']==stim]
+    ntrials = len(stim_trials)
+    stim_starts = stim_trials['time_samples'].values
+    stim_ends = stim_trials['stimulus_end'].values
+
+    stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
+    window = [period[0], stim_end_seconds+period[1]]
+    npts = np.floor((window[1]-window[0])/fs)
+    times = np.linspace(window[0], window[1], npts)
+    psths = np.zeros(ntrials, npts)
+    for trial, start in enumerate(stim_starts):
+        sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
+        psths[trial, :] = gaussian_psth_func(times, sptrain, sigma)
+    avg_psth = np.mean(psths, 0)
+    std_psth = np.std(psths, 0)
+    conf_ints = stats.t.interval(alpha, loc=avg_psth, scale=std_psth/np.sqrt(ntrials))
+    return (avg_psth, std_psth, conf_ints, times)
