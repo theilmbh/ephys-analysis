@@ -164,13 +164,10 @@ def calc_avg_gaussian_psth(spikes, trials, clusterID, stim, period, rec, fs, sig
 
     stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
     window = [period[0], stim_end_seconds+period[1]]
-    print(window)
-    npts = np.floor(1.0*(window[1]-window[0])/fs)
-    print(npts)
+    npts = np.floor(1.0*(window[1]-window[0])*fs)
     times = np.linspace(window[0], window[1], npts)
     psths = np.zeros((ntrials, npts))
     for trial, start in enumerate(stim_starts):
-        print(trial)
         sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
         psths[trial, :] = gaussian_psth_func(times, sptrain, sigma)
     print(psths)
