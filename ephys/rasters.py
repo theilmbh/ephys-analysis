@@ -174,3 +174,20 @@ def calc_avg_gaussian_psth(spikes, trials, clusterID, stim, period, rec, fs, sig
     std_psth = np.std(psths, 0)
     conf_ints = stats.t.interval(alpha, df=ntrials-1, loc=avg_psth, scale=std_psth/np.sqrt(ntrials))
     return (avg_psth, std_psth, conf_ints, times)
+
+def plot_unit(spikes, trials, clusterID, period, rec, fs, subplot_xy, figsize):
+    ''' 
+    Plots a raster of all trials of all stimuli from a given unit 
+    '''
+
+    stims = trials['stimulus'].unique()
+    f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize
+    for ind, stim in enumerate(stims):
+        ax = pltaxes.flatten()[ind]
+        rasters.plot_raster_cell_stim(spikes, trials, clusterID, stim, 
+                                      raster_window, rec, fs, ax=ax)
+        ax.set_title('Unit: {} Stim: {}'.format(str(8), stim))
+        ax.set_xlabel('Time (seconds)')
+        ax.set_ylabel('Repetition')
+    return f
+
