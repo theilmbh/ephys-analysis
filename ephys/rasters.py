@@ -172,5 +172,5 @@ def calc_avg_gaussian_psth(spikes, trials, clusterID, stim, period, rec, fs, sig
         psths[trial, :] = gaussian_psth_func(times, sptrain, sigma)
     avg_psth = np.mean(psths, 0)
     std_psth = np.std(psths, 0)
-    conf_ints = stats.t.interval(alpha, loc=avg_psth, scale=std_psth/np.sqrt(ntrials))
+    conf_ints = stats.t.interval(alpha, df=ntrials-1, loc=avg_psth, scale=std_psth/np.sqrt(ntrials))
     return (avg_psth, std_psth, conf_ints, times)
