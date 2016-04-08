@@ -181,7 +181,7 @@ def plot_unit(spikes, trials, clusterID, period, rec, fs, subplot_xy, figsize):
     '''
 
     stims = trials['stimulus'].unique()
-    f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize
+    f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize)
     for ind, stim in enumerate(stims):
         ax = pltaxes.flatten()[ind]
         rasters.plot_raster_cell_stim(spikes, trials, clusterID, stim, 
