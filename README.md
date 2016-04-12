@@ -1,6 +1,9 @@
 # ephys-analysis
 scripts and utilities for processing electrophysiology data
 
+[![Build Status](https://travis-ci.org/gentnerlab/ephys-analysis.svg?branch=master)](https://travis-ci.org/gentnerlab/ephys-analysis)
+[![Coverage Status](https://coveralls.io/repos/github/gentnerlab/ephys-analysis/badge.svg?branch=master)](https://coveralls.io/github/gentnerlab/ephys-analysis?branch=master)
+
 ## analysis architercture
 
 what we need to be able to do
