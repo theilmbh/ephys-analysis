@@ -175,20 +175,24 @@ def calc_avg_gaussian_psth(spikes, trials, clusterID, stim, period, rec, fs, sig
     conf_ints = stats.t.interval(alpha, df=ntrials-1, loc=avg_psth, scale=std_psth/np.sqrt(ntrials))
     return (avg_psth, std_psth, conf_ints, times)
 
-def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize):
+def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize, plot_params=None, fontsize=20):
     ''' 
     Plots a raster of all trials of all stimuli from a given unit 
     '''
 
     stims = trials['stimulus'].unique()
+
     f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize)
     for ind, stim in enumerate(stims):
         ax = pltaxes.flatten()[ind]
         plot_raster_cell_stim(spikes, trials, clusterID, stim, 
-                              raster_window, rec, fs, ax=ax)
+                              raster_window, rec, fs, plot_params=plot_params, ax=ax)
         ax.set_title('Unit: {} Stim: {}'.format(str(clusterID), stim))
         ax.set_xlabel('Time (seconds)')
         ax.set_ylabel('Repetition')
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+             ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(fontsize)
     return f
 
 def plot_avg_gaussian_psth_cell_stim(spikes, trials, clusterID, stim, raster_window, rec, fs, ax=None):
