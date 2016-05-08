@@ -16,7 +16,7 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
 
-  - conda create -y -n test-environment python=$TRAVIS_PYTHON_VERSION h5py pandas numpy scipy seaborn matplotlib nose coverage
+  - conda create -y -n test-environment python=$TRAVIS_PYTHON_VERSION h5py pandas numpy scipy seaborn matplotlib scikit-learn nose coverage
   - source activate test-environment
   - pip install coveralls
   - python setup.py install
