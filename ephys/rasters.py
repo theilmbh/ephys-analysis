@@ -104,9 +104,9 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
 
 def plot_raster_stim_trial(spikes, trials, clusters, 
                           stim, trial, period, rec, fs, plot_params=None, ax=None):
-'''
-Plots a spike raster for all cells for a single trial of a single stimulus
-'''
+    '''
+    Plots a spike raster for all cells for a single trial of a single stimulus
+    '''
     nclus = len(clusters)
     cluIDs = clusters['cluster'].values
     stim_trials = trials[trials['stimulus']==stim]
