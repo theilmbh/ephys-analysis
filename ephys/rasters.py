@@ -110,10 +110,10 @@ def plot_raster_stim_trial(spikes, trials, clusters,
     nclus = len(clusters)
     cluIDs = clusters['cluster'].values
     stim_trials = trials[trials['stimulus']==stim]
-    this_trial = stim_trials[trial]
-    stim_start = this_trial['time_samples'].values[0]
-    stim_end = this_trial['stimulus_end'].values
-    stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
+    this_trial = stim_trials.iloc[trial]
+    stim_start = this_trial['time_samples']
+    stim_end = this_trial['stimulus_end']
+    stim_end_seconds = np.unique((stim_end - stim_start)/fs)[0]
     window = [period[0], stim_end_seconds+period[1]]
     raster_data = []
     for clu_num, clu in enumerate(cluIDs):
