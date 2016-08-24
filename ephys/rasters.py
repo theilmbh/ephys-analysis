@@ -265,14 +265,14 @@ def plot_unit_raster(spikes, trials, clusterID, raster_window,
 
 def plot_avg_gaussian_psth_cell_stim(spikes, trials, clusterID, stim,
                                      raster_window, rec, fs, ax=None):
-    return 0
+    raise NotImplementedError
 
 def plot_unit_gaussian_psth(spikes, trials, clusterID, raster_window,
                             rec, fs, subplot_xy, figsize):
     ''' 
     Plots average psth gaussian smoothed
     '''
-
+    raise NotImplementedError
     stims = trials['stimulus'].unique()
     f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], 
                               sharey=True, figsize=figsize)
