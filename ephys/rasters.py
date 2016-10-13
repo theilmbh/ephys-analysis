@@ -143,7 +143,7 @@ def plot_raster_stim_trial(spikes, trials, stim, trial,
     stim_end = stim_trials['stimulus_end'].values[trial]
     stim_end_seconds = (stim_end - stim_start)/fs
     window = [period[0], stim_end_seconds+period[1]]
-    trial_spikes = calc_spikes_in_window(spikes, window)
+    trial_spikes = calc_spikes_in_window(spikes, [stim_start, stim_end])
     trial_clusters = np.unique(trial_spikes['cluster'].values)
 
     raster_data = []
