@@ -53,7 +53,7 @@ def do_raster(raster_data, times, ticks, ax=None, spike_linewidth=1.5,
 
 
 def plot_raster_cell_stim(spikes, trials, clusterID, 
-                          stim, period, rec, fs, plot_params=None, ax=None):
+                          stim, period, fs, plot_params=None, ax=None):
     '''
     Plots a spike raster for a single cell and stimulus 
 
@@ -89,8 +89,9 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
     stim_ends = stim_trials['stimulus_end'].values
     stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
     window = [period[0], stim_end_seconds+period[1]]
+    stimrecs = stim_trials['recording'].values
     raster_data = []
-    for trial, start in enumerate(stim_starts):
+    for trial, [start, rec] in enumerate(zip(stim_starts, stimrecs)):
         sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
         raster_data.append(sptrain)
     if plot_params == None:
