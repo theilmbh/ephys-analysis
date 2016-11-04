@@ -196,6 +196,39 @@ def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_
             item.set_fontsize(fontsize)
     return f
 
+def plot_all_cells(spikes, trials, clusters, quality, raster_window, fs):
+    '''
+    Plots rasters for all cells of a given quality.
+    The rasters are organized by stimuli; each subplot showing all trials from a given stimulus
+
+    Parameters 
+    ------
+    spikes : dataframe 
+        spike data
+    trials : dataframe 
+        trial data 
+    clusters : dataframe
+        cluster data 
+    quality : str 
+        quality identifier string ('Good', 'MUA', etc) 
+    raster_window : list 
+        Time before stimulus start and after stimulus end to include in plot (e.g. [-2, 2] for 2 secs before and after)
+    fs : int 
+        sampling rate 
+    '''
+
+    clusToPlot = clusters[clusters['quality']==quality]
+    stims = trials['stimulus'].unique()
+    nstims = len(stims)
+    for clu in clusToPlot['cluster'].values:
+        f, pltaxes = plt.subplots(int(np.ceil(nstims/4.0)), 4, sharey=True, figsize=(22,18))
+        rec = 1
+        for ind, stim in enumerate(stims):
+            ax = pltaxes.flatten()[ind]
+            rasters.plot_raster_cell_stim(spikes, trials, clu, stim, 
+                                  raster_window, fs, ax=ax)
+            ax.set_title('Cell: {} Stim: {}'.format(clu, stim))
+
 def plot_avg_gaussian_psth_cell_stim(spikes, trials, clusterID, stim, raster_window, rec, fs, ax=None):
     return 0
 
