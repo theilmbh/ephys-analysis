@@ -221,8 +221,9 @@ def plot_all_cells(spikes, trials, clusters, quality, raster_window, fs):
     stims = trials['stimulus'].unique()
     nstims = len(stims)
     for clu in clusToPlot['cluster'].values:
-        f, pltaxes = plt.subplots(int(np.ceil(nstims/4.0)), 4, sharey=True, figsize=(22,18))
-        rec = 1
+        NplotRows = int(np.ceil(nstims/4.0))
+        f, pltaxes = plt.subplots(NplotRows, 4, sharey=True, figsize=(22,18))
+        f.tight_layout()
         for ind, stim in enumerate(stims):
             ax = pltaxes.flatten()[ind]
             rasters.plot_raster_cell_stim(spikes, trials, clu, stim, 
