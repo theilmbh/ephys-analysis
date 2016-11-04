@@ -56,6 +56,8 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
                           stim, period, fs, plot_params=None, ax=None):
     '''
     Plots a spike raster for a single cell and stimulus 
+    Finds all the recordings and trials of a single stimulus 
+    No need to specify specific recordings
 
     Parameters
     ------
@@ -70,8 +72,6 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
     period : list of floats 
         Time window for the raster:  
         [Seconds_pre_stimulus_onset, Seconds_post_stimulus_end]
-    rec : int 
-        Recording ID 
     fs : float 
         Sampling rate
     plot_params : dict
