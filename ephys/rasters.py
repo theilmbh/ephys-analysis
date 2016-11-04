@@ -53,7 +53,7 @@ def do_raster(raster_data, times, ticks, ax=None, spike_linewidth=1.5,
 
 
 def plot_raster_cell_stim(spikes, trials, clusterID, 
-                          stim, period, fs, plot_params=None, ax=None):
+                          stim, period, fs, **kwargs):
     '''
     Plots a spike raster for a single cell and stimulus 
     Finds all the recordings and trials of a single stimulus 
@@ -94,14 +94,7 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
     for trial, [start, rec] in enumerate(zip(stim_starts, stimrecs)):
         sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
         raster_data.append(sptrain)
-    if plot_params == None:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
-    else:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
-                  spike_linewidth=plot_params['spike_linewidth'],
-                  spike_color=plot_params['spike_color'],
-                  tick_linewidth=plot_params['tick_linewidth'],
-                  tick_color=plot_params['tick_color'])
+    do_raster(raster_data, window, [0, stim_end_seconds], **kwargs)
 
 def gaussian_psth_func(times, spike_data, sigma):
     '''
