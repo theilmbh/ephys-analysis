@@ -102,6 +102,59 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
                   tick_linewidth=plot_params['tick_linewidth'],
                   tick_color=plot_params['tick_color'])
 
+def plot_raster_cell_stim_emily(spikes, trials, clusterID, 
+                          stim, period, rec, fs, plot_params=None, ax=None):
+    '''
+    Plots a spike raster for a single cell and stimulus 
+
+    Parameters
+    ------
+    spikes : pandas dataframe
+        spike dataframe from core 
+    trials : pandas dataframe
+        trials dataframe from events
+    clusterID : int
+        ID number of the cluster you wish to make the raster for 
+    stim : str 
+        Name of the stimulus you wish to plot cluster's activity for 
+    period : list of floats 
+        Time window for the raster:  
+        [Seconds_pre_stimulus_onset, Seconds_post_stimulus_end]
+    rec : int 
+        Recording ID 
+    fs : float 
+        Sampling rate
+    plot_params : dict
+        Drawing parameters:
+        'spike_linewidth' - linewidth of ticks for spikes 
+        'tick_linewidth' - linewidth of ticks for event markers
+        'spike_color' - color of spike ticks 
+        'tick_color' - color of event ticks 
+    ax : Matplotlib axes handle, optional
+        Axes on which to produce the raster.  Default is to use gca 
+    ''' 
+    stim_trials = trials[trials['stimulus']==stim]
+    stim_recs = stim_trials['recording'].values
+    ntrials = len(stim_trials)
+    stim_starts = stim_trials['time_samples'].values
+    stim_ends = stim_trials['stimulus_end'].values
+    stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
+    window = [period[0], stim_end_seconds+period[1]]
+    raster_data = []
+    for trial, stpl in enumerate(zip(stim_starts, stim_recs)):
+        start = stpl[0]
+        srec = stpl[1]
+        sptrain = get_spiketrain(srec, start, clusterID, spikes, window, fs)
+        raster_data.append(sptrain)
+    if plot_params == None:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
+    else:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
+                  spike_linewidth=plot_params['spike_linewidth'],
+                  spike_color=plot_params['spike_color'],
+                  tick_linewidth=plot_params['tick_linewidth'],
+                  tick_color=plot_params['tick_color'])
+
 def gaussian_psth_func(times, spike_data, sigma):
     '''
     Generates a gaussian psth from spike data 
@@ -186,6 +239,27 @@ def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_
     for ind, stim in enumerate(stims):
         ax = pltaxes.flatten()[ind]
         plot_raster_cell_stim(spikes, trials, clusterID, stim, 
+                              raster_window, rec, fs, plot_params=plot_params, ax=ax)
+        ax.set_title('Unit: {} Stim: {}'.format(str(clusterID), stim))
+        ax.set_xlabel('Time (seconds)')
+        ax.set_ylabel('Repetition')
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+             ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(fontsize)
+    return f
+
+def plot_unit_raster_emily(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize, plot_params=None, fontsize=20):
+    ''' 
+    Plots a raster of all trials of all stimuli from a given unit 
+    '''
+
+    stims = trials['stimulus'].unique()
+
+    f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize)
+    for ind, stim in enumerate(stims):
+        stimrecs = trials[trials['stimulus']==stim]['recording']
+        ax = pltaxes.flatten()[ind]
+        plot_raster_cell_stim_emily(spikes, trials, clusterID, stim, 
                               raster_window, rec, fs, plot_params=plot_params, ax=ax)
         ax.set_title('Unit: {} Stim: {}'.format(str(clusterID), stim))
         ax.set_xlabel('Time (seconds)')
