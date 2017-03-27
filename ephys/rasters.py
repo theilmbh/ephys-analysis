@@ -155,6 +155,37 @@ def plot_raster_cell_stim_emily(spikes, trials, clusterID,
                   tick_linewidth=plot_params['tick_linewidth'],
                   tick_color=plot_params['tick_color'])
 
+def plot_trial_raster_emily(spikes, trials, clusters, trialID, 
+                            stim, period, rec, fs, plot_params=None, ax=None):
+
+    stim_trials = trials[trials['stimulus']==stim]
+    stim_recs = stim_trials['recording'].values
+    ntrials = len(stim_trials)
+
+    stim_starts = stim_trials['time_samples'].values
+    stim_ends = stim_trials['stimulus_end'].values
+
+    stim_start = stim_starts[trialID]
+    stim_end = stim_ends[trialID]
+    stim_end_seconds = (stim_end - stim_start)/fs
+    srec = stim_recs[trialID]
+
+    clusterIDs = clusters['cluster'].values
+    window = [period[0], stim_end_seconds+period[1]]
+    raster_data = []
+    for clu in clusterIDs:
+        sptrain = get_spiketrain(srec, stim_start, clu, spikes, window, fs)
+        raster_data.append(sptrain)
+    if plot_params == None:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
+    else:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
+                  spike_linewidth=plot_params['spike_linewidth'],
+                  spike_color=plot_params['spike_color'],
+                  tick_linewidth=plot_params['tick_linewidth'],
+                  tick_color=plot_params['tick_color'])
+
+
 def gaussian_psth_func(times, spike_data, sigma):
     '''
     Generates a gaussian psth from spike data 
@@ -253,21 +284,26 @@ def plot_unit_raster_emily(spikes, trials, clusterID, raster_window, rec, fs, su
     Plots a raster of all trials of all stimuli from a given unit 
     '''
 
-    stims = trials['stimulus'].unique()
+    stims = np.unique(trials['stimulus'].values)
+    #stims = stims[~np.isnan(stims)]
 
     f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize)
     for ind, stim in enumerate(stims):
+        if str(stim) == 'nan':
+            continue
+        print(stim)
         stimrecs = trials[trials['stimulus']==stim]['recording']
         ax = pltaxes.flatten()[ind]
         plot_raster_cell_stim_emily(spikes, trials, clusterID, stim, 
                               raster_window, rec, fs, plot_params=plot_params, ax=ax)
         ax.set_title('Unit: {} Stim: {}'.format(str(clusterID), stim))
-        ax.set_xlabel('Time (seconds)')
+        #ax.set_xlabel('Time (seconds)')
         ax.set_ylabel('Repetition')
         for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
              ax.get_xticklabels() + ax.get_yticklabels()):
             item.set_fontsize(fontsize)
     return f
+
 
 def plot_avg_gaussian_psth_cell_stim(spikes, trials, clusterID, stim, raster_window, rec, fs, ax=None):
     return 0
