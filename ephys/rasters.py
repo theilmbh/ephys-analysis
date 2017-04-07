@@ -51,7 +51,6 @@ def do_raster(raster_data, times, ticks, ax=None, spike_linewidth=1.5,
                 lw=tick_linewidth)
     return ax
 
-
 def plot_raster_cell_stim(spikes, trials, clusterID, 
                           stim, period, rec, fs, ax=None, **kwargs):
     '''
@@ -141,7 +140,6 @@ def plot_raster_cell_stim_emily(spikes, trials, clusterID,
         raster_data.append(sptrain)
     do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs) 
 
-
 def plot_trial_raster_emily(spikes, trials, clusters, trialID, 
                             stim, period, rec, fs, plot_params=None, ax=None, **kwargs):
 
@@ -164,7 +162,6 @@ def plot_trial_raster_emily(spikes, trials, clusters, trialID,
         sptrain = get_spiketrain(srec, stim_start, clu, spikes, window, fs)
         raster_data.append(sptrain)
     do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs) 
-
 
 def gaussian_psth_func(times, spike_data, sigma):
     '''
@@ -284,7 +281,29 @@ def plot_unit_raster_emily(spikes, trials, clusterID, raster_window, rec, fs, su
             item.set_fontsize(fontsize)
     return f
 
+def plot_trial_raster_emily(spikes, trials, clusters, trialID, 
+                            stim, period, rec, fs, ax=None, **kwargs):
 
+    stim_trials = trials[trials['stimulus']==stim]
+    stim_recs = stim_trials['recording'].values
+    ntrials = len(stim_trials)
+
+    stim_starts = stim_trials['time_samples'].values
+    stim_ends = stim_trials['stimulus_end'].values
+
+    stim_start = stim_starts[trialID]
+    stim_end = stim_ends[trialID]
+    stim_end_seconds = (stim_end - stim_start)/fs
+    srec = stim_recs[trialID]
+
+    clusterIDs = clusters['cluster'].values
+    window = [period[0], stim_end_seconds+period[1]]
+    raster_data = []
+    for clu in clusterIDs:
+        sptrain = get_spiketrain(srec, stim_start, clu, spikes, window, fs)
+        raster_data.append(sptrain)
+    rasters.do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs) 
+    
 def plot_avg_gaussian_psth_cell_stim(spikes, trials, clusterID, stim, raster_window, rec, fs, ax=None):
     return 0
 
@@ -295,5 +314,3 @@ def plot_unit_gaussian_psth(spikes, trials, clusterID, raster_window, rec, fs, s
 
     stims = trials['stimulus'].unique()
     f, pltaxes = plt.subplots(subplot_xy[0], subplot_xy[1], sharey=True, figsize=figsize)
-
-
