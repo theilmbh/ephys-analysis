@@ -53,7 +53,7 @@ def do_raster(raster_data, times, ticks, ax=None, spike_linewidth=1.5,
 
 
 def plot_raster_cell_stim(spikes, trials, clusterID, 
-                          stim, period, rec, fs, plot_params=None, ax=None):
+                          stim, period, rec, fs, ax=None, **kwargs):
     '''
     Plots a spike raster for a single cell and stimulus 
 
@@ -93,17 +93,10 @@ def plot_raster_cell_stim(spikes, trials, clusterID,
     for trial, start in enumerate(stim_starts):
         sptrain = get_spiketrain(rec, start, clusterID, spikes, window, fs)
         raster_data.append(sptrain)
-    if plot_params == None:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
-    else:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
-                  spike_linewidth=plot_params['spike_linewidth'],
-                  spike_color=plot_params['spike_color'],
-                  tick_linewidth=plot_params['tick_linewidth'],
-                  tick_color=plot_params['tick_color'])
+    do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs) 
 
 def plot_raster_cell_stim_emily(spikes, trials, clusterID, 
-                          stim, period, rec, fs, plot_params=None, ax=None):
+                          stim, period, rec, fs, ax=None, **kwargs):
     '''
     Plots a spike raster for a single cell and stimulus 
 
@@ -146,17 +139,11 @@ def plot_raster_cell_stim_emily(spikes, trials, clusterID,
         srec = stpl[1]
         sptrain = get_spiketrain(srec, start, clusterID, spikes, window, fs)
         raster_data.append(sptrain)
-    if plot_params == None:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
-    else:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
-                  spike_linewidth=plot_params['spike_linewidth'],
-                  spike_color=plot_params['spike_color'],
-                  tick_linewidth=plot_params['tick_linewidth'],
-                  tick_color=plot_params['tick_color'])
+    do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs) 
+
 
 def plot_trial_raster_emily(spikes, trials, clusters, trialID, 
-                            stim, period, rec, fs, plot_params=None, ax=None):
+                            stim, period, rec, fs, plot_params=None, ax=None, **kwargs):
 
     stim_trials = trials[trials['stimulus']==stim]
     stim_recs = stim_trials['recording'].values
@@ -176,14 +163,7 @@ def plot_trial_raster_emily(spikes, trials, clusters, trialID,
     for clu in clusterIDs:
         sptrain = get_spiketrain(srec, stim_start, clu, spikes, window, fs)
         raster_data.append(sptrain)
-    if plot_params == None:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
-    else:
-        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
-                  spike_linewidth=plot_params['spike_linewidth'],
-                  spike_color=plot_params['spike_color'],
-                  tick_linewidth=plot_params['tick_linewidth'],
-                  tick_color=plot_params['tick_color'])
+    do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs) 
 
 
 def gaussian_psth_func(times, spike_data, sigma):
@@ -259,7 +239,7 @@ def calc_avg_gaussian_psth(spikes, trials, clusterID, stim, period, rec, fs, sig
     conf_ints = stats.t.interval(alpha, df=ntrials-1, loc=avg_psth, scale=std_psth/np.sqrt(ntrials))
     return (avg_psth, std_psth, conf_ints, times)
 
-def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize, plot_params=None, fontsize=20):
+def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize, fontsize=20, **kwargs):
     ''' 
     Plots a raster of all trials of all stimuli from a given unit 
     '''
@@ -270,7 +250,7 @@ def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_
     for ind, stim in enumerate(stims):
         ax = pltaxes.flatten()[ind]
         plot_raster_cell_stim(spikes, trials, clusterID, stim, 
-                              raster_window, rec, fs, plot_params=plot_params, ax=ax)
+                              raster_window, rec, fs, ax=ax, **kwargs)
         ax.set_title('Unit: {} Stim: {}'.format(str(clusterID), stim))
         ax.set_xlabel('Time (seconds)')
         ax.set_ylabel('Repetition')
@@ -279,7 +259,7 @@ def plot_unit_raster(spikes, trials, clusterID, raster_window, rec, fs, subplot_
             item.set_fontsize(fontsize)
     return f
 
-def plot_unit_raster_emily(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize, plot_params=None, fontsize=20):
+def plot_unit_raster_emily(spikes, trials, clusterID, raster_window, rec, fs, subplot_xy, figsize, fontsize=20, **kwargs):
     ''' 
     Plots a raster of all trials of all stimuli from a given unit 
     '''
@@ -295,7 +275,7 @@ def plot_unit_raster_emily(spikes, trials, clusterID, raster_window, rec, fs, su
         stimrecs = trials[trials['stimulus']==stim]['recording']
         ax = pltaxes.flatten()[ind]
         plot_raster_cell_stim_emily(spikes, trials, clusterID, stim, 
-                              raster_window, rec, fs, plot_params=plot_params, ax=ax)
+                              raster_window, rec, fs, ax=ax, **kwargs)
         ax.set_title('Unit: {} Stim: {}'.format(str(clusterID), stim))
         #ax.set_xlabel('Time (seconds)')
         ax.set_ylabel('Repetition')
