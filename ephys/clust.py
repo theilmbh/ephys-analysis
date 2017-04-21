@@ -2,7 +2,7 @@ import os
 import glob
 import numpy as np
 from scipy.interpolate import UnivariateSpline
-from core import file_finder, load_probe, load_fs
+from core import file_finder, load_probe, load_fs, load_clusters
 
 @file_finder
 def find_mean_waveforms(block_path,cluster,cluster_store=0,clustering='main'):
@@ -243,3 +243,15 @@ def get_spike_exemplar(block_path,clu):
     mean_masks_arr = np.fromfile(mean_masks,dtype=np.float32)
     
     return arr[:,mean_masks_arr.argmax()]
+
+def get_wide_narrow(block_path, cluster_list, thresh):
+
+    wide = []
+    narrow = []
+    for clu in cluster_list:
+        sw = get_width(block_path, clu)
+        if sw >= thresh:
+            wide.append(clu)
+        else:
+            narrow.append(clu)
+    return (wide, narrow)
