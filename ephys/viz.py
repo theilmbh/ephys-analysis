@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from core import load_probe, load_fs, load_clusters
-from clust import get_mean_waveform_array, upsample_spike, find_mean_masks
-from clust import get_cluster_coords, mean_masks_w, get_spike_exemplar
+from .core import load_probe, load_fs, load_clusters
+from .clust import get_mean_waveform_array, upsample_spike, find_mean_masks
+from .clust import get_cluster_coords, mean_masks_w, get_spike_exemplar
 
 def plot_cluster(block_path,clu,chan_alpha=None,scale_factor=0.05,color='0.5',**plot_kwargs):
     '''

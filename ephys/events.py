@@ -1,7 +1,7 @@
 import re
 import datetime as dt
 import numpy as np
-from core import load_events, load_fs, load_info
+from .core import load_events, load_fs, load_info
     
 class FindEnd():
     def __init__(self):
