@@ -35,12 +35,12 @@ def file_finder(find_file_func):
 def find_kwik(block_path):
     '''
     Returns the kwik file found in the block path
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     kwik : full path name to kwik file
@@ -51,12 +51,12 @@ def find_kwik(block_path):
 def find_kwd(block_path):
     '''
     Returns the raw.kwd file found in the block path
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     kwd : full path name to raw.kwd file
@@ -68,12 +68,12 @@ def find_kwd(block_path):
 def find_kwx(block_path):
     '''
     Returns the kwx file found in the block path
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     kwx : full path name to kwx file
@@ -84,12 +84,12 @@ def find_kwx(block_path):
 def find_prb(block_path):
     '''
     Returns the *.prb file found in the block path
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     prb : full path name to *.prb file
@@ -100,12 +100,12 @@ def find_prb(block_path):
 def find_info(block_path):
     '''
     Returns the raw.kwd file found in the block path
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     kwd : full path name to _info.json file
@@ -115,12 +115,12 @@ def find_info(block_path):
 def load_probe(block_path):
     '''
     Returns the probe info for the block
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     probe_info : dictionary of probe channels, geometry, and adjacencies
@@ -135,44 +135,49 @@ def load_events(block_path,event_type):
 
     >>> digmarks = load_events(block_path,'DigMark')
     >>> stimulus = load_events(block_path,'Stimulus')
-    
+
     Parameters
     ------
     block_path : str
         path to the block
     event_type : str
         the type of event
-    
+
     Returns
     ------
     events : pandas DataFrame
         Dataframe format
         Depends on event type
-        codes : the code of the event 
+        codes : the code of the event
         time_samples : time in samples of the event
-        recording : the recording ID of the event 
+        recording : the recording ID of the event
         text : text associated with the event (Stimulus only)
-    
+
     '''
     with h5.File(find_kwik(block_path),'r') as kf:
         events = {}
         for col in kf['/event_types'][event_type]:
+            if col == 'text':
+                txt = [x.decode('UTF-8') for x in kf['/event_types'][event_type][col][:]]
+                #print([(x, x.type) for x in kf['/event_types'][event_type][col][:]])
+                events[col] = txt
             events[col] = kf['/event_types'][event_type][col][:]
+
     return pd.DataFrame(events)
 
 def load_fs(block_path):
     '''
     Reads sampling rate in Hz from the kwik file associated with a block
-    
+
     Parameters
     ------
     block_path : str
         path to the block
-    
+
     Returns
     ------
     fs : sampling rate in Hz
-    
+
     '''
     with h5.File(find_kwik(block_path),'r') as kf:
         fs = kf['/recordings/0'].attrs['sample_rate']
@@ -190,19 +195,19 @@ def load_qual(block_path,cluster):
     '''
     Returns labeled cluster quality ('Noise', 'MUA', 'Good', 'unsorted')
         for a given cluster
-    
+
     Parameters
     ------
     block_path : str
         path to the block
     cluster : int
         the cluster id
-    
+
     Returns
     ------
     quality : string
         one of the following: ('Noise', 'MUA', 'Good', 'unsorted')
-    
+
     '''
     with h5.File(find_kwik(block_path),'r') as kf:
         qual = kf['/channel_groups/0/clusters/main/']["%i" % cluster].attrs['cluster_group']
@@ -220,7 +225,7 @@ def load_clusters(block_path,channel_group=0,clustering='main'):
         shank ID
     clustering : str, optional
         ID of clustering
-    
+
     Returns
     ------
     clusters : pandas DataFrame
@@ -228,7 +233,7 @@ def load_clusters(block_path,channel_group=0,clustering='main'):
         cluster : cluster ID
         quality : cluster quality from manual sort ('Noise', 'MUA', 'Good', 'unsorted')
 
-    '''    
+    '''
     with h5.File(find_kwik(block_path),'r') as kf:
         observed_clusters = np.unique(
             kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:]
@@ -240,7 +245,7 @@ def load_clusters(block_path,channel_group=0,clustering='main'):
 def load_spikes(block_path,channel_group=0,clustering='main'):
     '''
     Returns a pandas dataframe of spikes observed in kwik file
-    
+
     Parameters
     ------
     block_path : str
@@ -249,16 +254,16 @@ def load_spikes(block_path,channel_group=0,clustering='main'):
         shank ID
     clustering : int, optional
         ID of clustering
-        
+
     Returns
     ------
     spikes : pandas DataFrame
         Dataframe format
-        cluster : cluster ID of the spike 
+        cluster : cluster ID of the spike
         recording : recording ID of the spike
         time_samples : time stamp (samples) of the spike
 
-    '''    
+    '''
     with h5.File(find_kwik(block_path),'r') as kf:
         spikes = pd.DataFrame(
             dict(cluster=kf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group,clustering)][:],
