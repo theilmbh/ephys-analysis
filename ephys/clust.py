@@ -2,7 +2,10 @@ import os
 import glob
 import numpy as np
 from scipy.interpolate import UnivariateSpline
-from .core import file_finder, load_probe, load_fs, load_clusters
+from .core import file_finder, load_probe, load_fs, load_clusters, load_spikes
+from .core import find_info, find_kwd, find_kwik, find_kwx
+import h5py as h5
+import json
 
 @file_finder
 def find_mean_waveforms(block_path,cluster,cluster_store=0,clustering='main'):
