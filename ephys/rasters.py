@@ -50,6 +50,26 @@ def do_raster(raster_data, times, ticks, ax=None, spike_linewidth=1.5,
                 lw=tick_linewidth)
     return ax
 
+def plot_raster_stim_trial(spikes, trials, clusters, stim, trial, period,
+                           rec, fs, ax=None, **kwargs):
+    '''
+    Plots a raster of all clusters for a given stimulus for a given trial 
+    '''
+
+    stim_trials = trials[trials['stimulus']==stim]
+    ntrials = len(stim_trials)
+    stim_starts = stim_trials['time_samples'].values
+    stim_ends = stim_trials['stimulus_end'].values
+    stim_end_seconds = np.unique((stim_ends - stim_starts)/fs)[0]
+    window = [period[0], stim_end_seconds+period[1]]
+    raster_data = []
+    assert (trial < ntrials)
+    start = stim_starts[trial]
+    for cell in clusters['cluster'].values:
+        sptrain = get_spiketrain(rec, start, cell, spikes, window, fs)
+        raster_data.append(sptrain)
+    do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs)
+
 def plot_raster_cell_stim(spikes, trials, clusterID,
                           stim, period, rec, fs, ax=None, **kwargs):
     '''
