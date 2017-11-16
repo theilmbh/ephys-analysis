@@ -69,7 +69,9 @@ def load_acute_stims(block_path):
     #assumes one start and one end for each trial
     stims.loc[stims['codes'] == '<', 'stim_end'] = stims[stims['codes'] == '>']['time_samples'].values
     stims = stims[stims['codes'] == '<']
-    stims['stim_name'] = core.load_events(block_path,'Stimulus')['text'][1::2].values
+    # on some recs there are random date entries in the stim text field at the start... removing them here
+    stimdat = core.load_events(block_path,'Stimulus')
+    stims['stim_name'] = stimdat['text'][stimdat['time_samples'] > stims['time_samples'].min()][1::2].values
     stims.reset_index(drop=True, inplace=True)
     del stims['codes']
     stims.rename(columns={'time_samples': 'stim_start'}, inplace=True)
