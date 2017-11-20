@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import .core
+import core
 
 def kwik2rigid_pandas(block_path):
     '''
