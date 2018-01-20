@@ -190,3 +190,15 @@ def plot_cluster_locations(block_path,clusters=None,quality=('Good','MUA'),bin_w
     loc_plot.ax_joint.set_ylim(y_mid-half_span,y_mid+half_span)
     loc_plot.ax_joint.set_xticks(np.unique(coords[:,0]))
     loc_plot.ax_joint.set_yticks(np.unique(coords[:,1]))
+
+def plot_mean_cluster_waverforms(waveforms, cluster_map, figsize=(15, 15), sharey=False):
+    num_clusters = len(cluster_map)
+    nrows = int(np.sqrt(num_clusters))
+    ncols = int(np.ceil(float(num_clusters) / nrows))
+    inverted_cluster_map = {cluster_map[k]:k for k in cluster_map}
+    fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize, sharex=True, sharey=sharey)
+    for i, ax in enumerate(axs.reshape(-1)):
+        if i < num_clusters:
+            ax.plot(waveforms[i,:,:])
+            ax.set_title(inverted_cluster_map[i])
+    sns.despine(fig=fig, left=True, bottom=True, trim=True)

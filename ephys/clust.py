@@ -326,3 +326,35 @@ def compute_cluster_waveforms(block_path):
         mean_masks.tofile(os.path.join(phy_fold, '{}.mean_masks'.format(clu)))
         mean_features.tofile(os.path.join(phy_fold, '{}.mean_features'.format(clu)))
         features.tofile(os.path.join(phy_fold, '{}.features'.format(clu)))
+
+def compute_cluster_waveforms_fast(block_path, spikes, before=10, after=30, n_chans=-1):
+    wave_length = before + 1 + after
+    
+    kwd = find_kwd(block_path)
+    with h5.File(kwd, 'r') as kwd_f:
+        if n_chans == -1:
+            recordings = np.sort(np.array(kwd_f['recordings'].keys(), dtype=int)).astype('unicode')
+            for recording in recordings:
+                assert n_chans == -1 or n_chans == kwd_f['recordings'][recording]['data'].shape[1]
+                n_chans = kwd_f['recordings'][recording]['data'].shape[1]
+
+        num_clusters = len(spikes['cluster'].unique())
+        counts = np.zeros(num_clusters)
+        waveforms = np.zeros((num_clusters, wave_length, n_chans))
+        cluster_map = spikes['cluster'].unique()
+        cluster_map.sort()
+        cluster_map = {cluster: idx for idx, cluster in enumerate(cluster_map)}
+
+        for recording, recording_group in spikes.groupby('recording'):
+            recording_data = kwd_f['recordings'][str(recording)]['data'][:,:]
+            for cluster, cluster_spikes in recording_group.groupby('cluster'):
+                starts = cluster_spikes['time_samples'].values - before
+                starts = starts[starts>0]
+                starts = starts[starts+wave_length < recording_data.shape[0]]
+                counts[cluster_map[cluster]] += len(starts)
+
+                for i in xrange(wave_length):
+                    waveforms[cluster_map[cluster],i,:] += np.sum(recording_data[starts+i,:], axis=0)
+
+    waveforms /= counts.reshape((num_clusters, 1, 1))
+    return waveforms, cluster_map
