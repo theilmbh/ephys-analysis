@@ -187,11 +187,12 @@ def align_events(spikes, events, columns2copy=['stim_name', 'stim_presentation',
 
     '''
     data = []
-    for recording in events['recording'].unique():
-        data.extend(spikes[spikes['recording'] == recording]["time_samples"].map(
-            _EventAligner(events, output_labels=columns2copy, 
+    grouped_spikes = spikes.groupby('recording')
+    for recording, event_recording_group in events.groupby('recording'):
+        data.extend(grouped_spikes.get_group(recording)["time_samples"].map(
+            _EventAligner(event_recording_group, output_labels=columns2copy, 
                 start_label=start_label, end_label=end_label,
-                event_index=events[events['recording'] == recording].index[0]).event_checker))
+                event_index=event_recording_group.index[0]).event_checker))
     return pd.DataFrame(data=data, columns=columns2copy, index=spikes.index)
 
 class _EventAligner(object):
