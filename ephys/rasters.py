@@ -147,6 +147,34 @@ def plot_raster_cell_stim_emily(spikes, trials, clusterID,
     do_raster(raster_data, window, [0, stim_end_seconds], ax, **kwargs)
 
 
+def plot_raster_stim_trial(spikes, trials, clusters, 
+                          stim, trial, period, rec, fs, plot_params=None, ax=None):
+    '''
+    Plots a spike raster for all cells for a single trial of a single stimulus
+    '''
+    nclus = len(clusters)
+    cluIDs = clusters['cluster'].values
+    stim_trials = trials[trials['stimulus']==stim]
+    this_trial = stim_trials.iloc[trial]
+    stim_start = this_trial['time_samples']
+    stim_end = this_trial['stimulus_end']
+    stim_end_seconds = np.unique((stim_end - stim_start)/fs)[0]
+    window = [period[0], stim_end_seconds+period[1]]
+    raster_data = []
+    for clu_num, clu in enumerate(cluIDs):
+        sptrain = get_spiketrain(rec, stim_start, clu, spikes, window, fs)
+        raster_data.append(sptrain)
+    if plot_params == None:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax) 
+    else:
+        do_raster(raster_data, window, [0, stim_end_seconds], ax, 
+                  spike_linewidth=plot_params['spike_linewidth'],
+                  spike_color=plot_params['spike_color'],
+                  tick_linewidth=plot_params['tick_linewidth'],
+                  tick_color=plot_params['tick_color'])
+
+
+
 def gaussian_psth_func(times, spike_data, sigma):
     '''
     Generates a gaussian psth from spike data
