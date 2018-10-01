@@ -9,6 +9,8 @@ scipy
 seaborn
 matplotlib
 scikit-learn
-nose
-coverage
-coveralls
+googledrivedownloader
+pathlib2
+pytest-ordering
+pytest-cov
+python-coveralls
