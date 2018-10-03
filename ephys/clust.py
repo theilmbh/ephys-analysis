@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import glob
 import numpy as np
@@ -6,6 +8,7 @@ from .core import file_finder, load_probe, load_fs, load_clusters, load_spikes
 from .core import find_info, find_kwd, find_kwik, find_kwx
 import h5py as h5
 import json
+from six.moves import range
 
 
 @file_finder
@@ -139,7 +142,7 @@ def get_cluster_coords(block_path, cluster, weight_func=None):
     return np.dot(w, coords) / w.sum()
 
 
-## spike shapes
+# spike shapes
 
 def upsample_spike(spike_shape, fs, new_fs=1000000.0):
     '''
@@ -339,7 +342,8 @@ def spikeindices(block_path, cluster, channel_group=0, clustering='main'):
         indices of spikes in a specified cluster
     '''
     with h5.File(find_kwik(block_path), 'r') as kwikf:
-        sptimes = kwikf['/channel_groups/{}/spikes/clusters/{}'.format(channel_group, clustering)][:]
+        sptimes = kwikf[
+            '/channel_groups/{}/spikes/clusters/{}'.format(channel_group, clustering)][:]
     return (sptimes == cluster)
 
 
@@ -433,7 +437,8 @@ def compute_cluster_waveforms_fast(block_path, spikes, before=10, after=30, n_ch
     kwd = find_kwd(block_path)
     with h5.File(kwd, 'r') as kwd_f:
         if n_chans == -1:
-            recordings = np.sort(np.array(kwd_f['recordings'].keys(), dtype=int)).astype('unicode')
+            recordings = np.sort(
+                np.array(list(kwd_f['recordings'].keys()), dtype=int)).astype('unicode')
             for recording in recordings:
                 assert n_chans == -1 or n_chans == kwd_f['recordings'][recording]['data'].shape[1]
                 n_chans = kwd_f['recordings'][recording]['data'].shape[1]
@@ -453,8 +458,9 @@ def compute_cluster_waveforms_fast(block_path, spikes, before=10, after=30, n_ch
                 starts = starts[starts + wave_length < recording_data.shape[0]]
                 counts[cluster_map[cluster]] += len(starts)
 
-                for i in xrange(wave_length):
-                    waveforms[cluster_map[cluster], i, :] += np.sum(recording_data[starts + i, :], axis=0)
+                for i in range(wave_length):
+                    waveforms[cluster_map[cluster], i,
+                              :] += np.sum(recording_data[starts + i, :], axis=0)
 
     waveforms /= counts.reshape((num_clusters, 1, 1))
     return waveforms, cluster_map
