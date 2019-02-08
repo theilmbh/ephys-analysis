@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import re
 import datetime as dt
 import numpy as np
+import pandas as pd
 from .core import load_events, load_fs, load_info
 
 
@@ -319,3 +320,19 @@ def load_trials(block_path):
     trials.sort_values('datetime', inplace=True)
     trials['correction'] = trials.apply(FindCorrectionTrials().check, axis=1)
     return trials
+
+TRIAL_CHANNEL = 0
+
+def oe_load_trials(block_path):
+    
+    ttls = load_events(block_path, 'TTL')
+    stimuli = load_events(block_path, 'Stimulus')
+
+    trial_starts = ttls[(ttls.channel == TRIAL_CHANNEL) & (ttls.eventID==1)]['time_samples'].values
+    trial_ends = ttls[(ttls.channel == TRIAL_CHANNEL) & (ttls.eventID==0)]['time_samples'].values
+    stims = [x.decode('utf8') for x in stimuli['text'].values]
+    time_samples = stimuli['time_samples'].values
+    stimulus_end = trial_ends  #### TODO: FIX THIS
+    trials = pd.DataFrame({'trial_start': trial_starts, 'trial_end': trial_ends, 'time_samples': time_samples, 'stimulus_end': stimulus_end, 'stimulus': stims})
+    return trials
+    
