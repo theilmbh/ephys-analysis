@@ -332,7 +332,7 @@ def oe_load_trials(block_path):
     trial_ends = ttls[(ttls.channel == TRIAL_CHANNEL) & (ttls.eventID==0)]['time_samples'].values
     stims = [x.decode('utf8') for x in stimuli['text'].values]
     time_samples = stimuli['time_samples'].values
-    stimulus_end = trial_ends  #### TODO: FIX THIS
+    stimulus_end = stimuli['stimulus_end'].values  
     trials = pd.DataFrame({'trial_start': trial_starts, 'trial_end': trial_ends, 'time_samples': time_samples, 'stimulus_end': stimulus_end, 'stimulus': stims})
     return trials
     
