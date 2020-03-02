@@ -168,12 +168,18 @@ def load_events(block_path, event_type):
     '''
     with h5.File(find_kwik(block_path), 'r') as kf:
         events = {}
+        lens = []
         for col in kf['/event_types'][event_type]:
             if col == 'text':
                 txt = [x.decode('UTF-8') for x in kf['/event_types'][event_type][col][:]]
                 # print([(x, x.type) for x in kf['/event_types'][event_type][col][:]])
                 events[col] = txt
             events[col] = kf['/event_types'][event_type][col][:]
+            lens.append(len(events[col]))
+        min_valid_len = np.amin(lens)
+        for col in events.keys():
+            events[col] = events[col][:min_valid_len]
+
 
     return pd.DataFrame(events)
 

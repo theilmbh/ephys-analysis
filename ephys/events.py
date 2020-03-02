@@ -330,9 +330,12 @@ def oe_load_trials(block_path):
 
     trial_starts = ttls[(ttls.channel == TRIAL_CHANNEL) & (ttls.eventID==1)]['time_samples'].values
     trial_ends = ttls[(ttls.channel == TRIAL_CHANNEL) & (ttls.eventID==0)]['time_samples'].values
+    if len(trial_starts) > len(trial_ends):
+        trial_ends = np.append(trial_ends, trial_starts[-1]+181000)
     stims = [x.decode('utf8') for x in stimuli['text'].values]
     time_samples = stimuli['time_samples'].values
     stimulus_end = stimuli['stimulus_end'].values  
-    trials = pd.DataFrame({'trial_start': trial_starts, 'trial_end': trial_ends, 'time_samples': time_samples, 'stimulus_end': stimulus_end, 'stimulus': stims})
+    mvl = np.amin([len(x) for x in (trial_starts, trial_ends, stims, time_samples, stimulus_end)])
+    trials = pd.DataFrame({'trial_start': trial_starts[:mvl], 'trial_end': trial_ends[:mvl], 'time_samples': time_samples[:mvl], 'stimulus_end': stimulus_end[:mvl], 'stimulus': stims[:mvl]})
     return trials
     
