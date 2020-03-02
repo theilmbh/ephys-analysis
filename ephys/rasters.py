@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
+import os, tqdm
 from ephys.spiketrains import get_spiketrain
 from ephys import core
 from ephys import events
@@ -106,20 +107,21 @@ def plot_all_rasters(block_path):
     '''
     rasters_folder = os.path.join(block_path, 'rasters/')
     spikes = core.load_spikes(block_path)
-    trials = core.load_trials(block_path)
+    trials = events.oe_load_trials(block_path)
     fs = core.load_fs(block_path)
     stims = np.unique(trials['stimulus'].values)
+    clusters = core.load_clusters(block_path)
 
     os.makedirs(rasters_folder, exist_ok=True)
-    for cluster in tqdm.tqdm(clusters):
-        os.makedirs(os.path.join(rasters_folder, '{}/'.format(cluster), exist_ok=True))
+    for cluster in tqdm.tqdm(clusters["cluster"]):
+        os.makedirs(os.path.join(rasters_folder, '{}/'.format(cluster)), exist_ok=True)
         for stim in tqdm.tqdm(stims):
             fig = plt.figure()
             ax = plot_raster_cell_stim(spikes, trials, cluster, stim, [-2, 2], 0, fs)
             ax.set_xlabel('Time (s)')
             ax.set_ylabel('Trial Number')
             ax.set_title('Unit: {}  Stimulus: {}'.format(cluster, stim))
-            plt.savefig(os.path.join(rasters_folder, '/{}/unit-{}_stim-{}.pdf'.format(cluster, cluster, stim)))
+            plt.savefig(os.path.join(rasters_folder, '{}/unit-{}_stim-{}.pdf'.format(cluster, cluster, stim)))
             plt.close(fig)
 
 
