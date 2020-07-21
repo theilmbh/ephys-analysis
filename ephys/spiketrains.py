@@ -1,6 +1,9 @@
+from __future__ import absolute_import
 import numpy as np
+from six.moves import zip
 
-def get_spiketrain(rec,samps,clu,spikes,window,fs):
+
+def get_spiketrain(rec, samps, clu, spikes, window, fs):
     '''
     Returns a numpy array of spike times for a single cluster 
         within a window locked to a sampling time.
@@ -24,20 +27,21 @@ def get_spiketrain(rec,samps,clu,spikes,window,fs):
     ------
     spike_train : numpy array of spike times in seconds
     '''
-    bds = [w*fs+samps for w in window]
+    bds = [w * fs + samps for w in window]
 
     window_mask = (
-        (spikes['time_samples']>bds[0])
-        & (spikes['time_samples']<=bds[1])
-        )
-    
+            (spikes['time_samples'] > bds[0])
+            & (spikes['time_samples'] <= bds[1])
+    )
+
     perievent_spikes = spikes[window_mask]
-    
+
     mask = (
-        (perievent_spikes['recording']==rec)
-        & (perievent_spikes['cluster']==clu)
-        )
+            (perievent_spikes['recording'] == rec)
+            & (perievent_spikes['cluster'] == clu)
+    )
     return (perievent_spikes['time_samples'][mask].values.astype(np.float_) - samps) / fs
+
 
 def calc_spikes_in_window(spikes, window):
     '''
@@ -56,9 +60,10 @@ def calc_spikes_in_window(spikes, window):
         DataFrame with same layout as input spikes but containing only spikes 
         within window 
     '''
-    mask = ((spikes['time_samples']<window[1]) & 
-            (spikes['time_samples']>=window[0]))
+    mask = ((spikes['time_samples'] < window[1]) &
+            (spikes['time_samples'] >= window[0]))
     return spikes[mask]
+
 
 def calc_spike_vector(spikes, time_bins):
     '''
@@ -79,8 +84,9 @@ def calc_spike_vector(spikes, time_bins):
     spike_vector = np.zeros(len(time_bins))
     for ind, bin in enumerate(time_bins):
         nspikes = len(calc_spikes_in_window(spikes, bin))
-        spike_vector[ind] = nspikes 
-    return spike_vector 
+        spike_vector[ind] = nspikes
+    return spike_vector
+
 
 def calc_time_bins(bounds, fs, dt):
     '''
@@ -101,20 +107,14 @@ def calc_time_bins(bounds, fs, dt):
         list of lists of time bins in samples 
     '''
 
-    dt_samps = np.round(float(dt)/float(fs))
-    T = bounds[1] - bounds[0] 
-    T_seconds = T/float(fs)
-    nwin = np.round(T_seconds/(dt/1000.))
+    dt_samps = np.round(float(dt) / float(fs))
+    T = bounds[1] - bounds[0]
+    T_seconds = T / float(fs)
+    nwin = np.round(T_seconds / (dt / 1000.))
     ticks = np.round(np.linspace(bounds[0], bounds[1], nwin))
     starts = ticks[0:-1]
     ends = ticks[1:]
     time_bins = []
     for start, end in zip(starts, ends):
         time_bins.append([start, end])
-    return time_bins 
-
-
-
-
-
-
+    return time_bins

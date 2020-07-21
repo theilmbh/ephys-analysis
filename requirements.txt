@@ -1,0 +1,19 @@
+# local package
+-e .
+
+# external requirements
+h5py
+pandas<=0.25.3
+numpy
+scipy
+seaborn
+matplotlib
+scikit-learn
+googledrivedownloader
+pathlib2
+
+# testing
+pytest>=3.6
+pytest-ordering
+pytest-cov
+python-coveralls
