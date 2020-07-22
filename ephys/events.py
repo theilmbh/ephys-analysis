@@ -43,11 +43,11 @@ def get_stim_start(stim_end_row, digmarks):
     mask = (
         (digmarks['recording'] == rec)
         & (digmarks['time_samples'] < ts)
-        & ~digmarks['codes'].str.contains(b'[RCL]')
+        & ~digmarks['codes'].str.contains('[RCL]')
     )
     this_trial_mask = (
         digmarks[mask].iloc[::-1]['codes'].apply(FindEnd().check).iloc[::-1]
-        & digmarks[mask]['codes'].str.contains(b'<')
+        & digmarks[mask]['codes'].str.contains('<')
     )
     this_trial = digmarks[mask][this_trial_mask]
     return this_trial.iloc[0]
@@ -121,7 +121,7 @@ def get_stim_end(trial_row, digmarks, fs, window=75.0):
         (digmarks['recording'] == rec)
         & (digmarks['time_samples'] > samps)
         & (digmarks['time_samples'] < (samps + fs * window))
-        & digmarks['codes'].str.contains(b'[>#]')
+        & digmarks['codes'].str.contains('[>#]')
     )
     # print(digmarks[resp_mask].shape)
     assert digmarks[resp_mask].shape[0] > 0
@@ -158,7 +158,7 @@ def get_response(trial_row, digmarks, fs, window=5.0):
         (digmarks['recording'] == rec)
         & (digmarks['time_samples'] > (samps + stim_dur))
         & (digmarks['time_samples'] < (samps + stim_dur + fs * window))
-        & digmarks['codes'].str.contains(b'[RLN]')
+        & digmarks['codes'].str.contains('[RLN]')
     )
     if digmarks[resp_mask].shape[0] > 0:
         return digmarks[resp_mask].iloc[0]
@@ -194,7 +194,7 @@ def get_consequence(trial_row, digmarks, fs, window=2.0):
         (digmarks['recording'] == rec)
         & (digmarks['time_samples'] > bds[0])
         & (digmarks['time_samples'] < bds[1])
-        & digmarks['codes'].str.contains(b'[FfTt]')
+        & digmarks['codes'].str.contains('[FfTt]')
     )
     if digmarks[resp_mask].shape[0] > 0:
         return digmarks[resp_mask].iloc[0]
@@ -289,14 +289,14 @@ def load_trials(block_path):
     stimulus['text'] = stimulus.apply(lambda row: row['text'].decode(), axis=1)
 
     stim_mask = (
-        ~(stimulus['text'].astype(str).str.contains(b'date'))
+        ~(stimulus['text'].astype(str).str.contains('date'))
         & (stimulus['text'].apply(_is_not_floatable))  # occlude floats
     )
     stimulus = stimulus[stim_mask]
     fs = load_fs(block_path)
     info = load_info(block_path)
 
-    stim_end_mask = digmarks['codes'].isin((b'>', b'#'))
+    stim_end_mask = digmarks['codes'].isin(('>', '#'))
     trials = digmarks[stim_end_mask].apply(lambda row: get_stim_start(row, digmarks), axis=1)[:]
     trials.reset_index(inplace=True)
     del trials['index']
